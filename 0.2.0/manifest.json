@@ -1,0 +1,23 @@
+{
+"update_url": "https://clients2.google.com/service/update2/crx",
+
+   "content_scripts": [ {
+      "js": [ "jquery-2.1.0.min.js", "PP.js" ],
+      "matches": ["http://*/*",
+                  "https://*/*"
+                 ],
+      "run_at": "document_end"
+   } ],
+   "description": "Show links to existing PubPeer comments",
+   "icons": {
+      "128": "PP128.png",
+      "16": "PP19.png",
+      "48": "PP48.png"
+   },
+   "manifest_version": 2,
+   "permissions": [
+     "storage"
+   ],
+   "name": "PubPeer",
+   "version": "0.2.0"
+}
