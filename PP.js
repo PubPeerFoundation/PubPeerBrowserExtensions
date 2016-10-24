@@ -1,7 +1,7 @@
 var pageDOIs=document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi);
 pageDOIs = $.unique(pageDOIs);
 if(window.location.hostname != "pubpeer.com" && pageDOIs.length > 0){
-	let dotcom = "devkey=4aad283865b213d329ce62661d5a959f";
+	let dotcom = "devkey=PubMedChrome";
 
 	new Promise(function(resolve, reject) {
 		let storedDOIs = localStorage.getItem("storedDOIs");
