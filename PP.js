@@ -59,17 +59,16 @@ if(window.location.hostname != "pubpeer.com" && pageDOIs.length > 0){
 			} else if(total_comments > 1){
 				hrefText = total_comments + " comments on PubPeer";
 			}
+			commenterArray = [];
 			if(total_comments > 0) {
-				let comment_users = "by ";
 				for(let j = 0; j < total_comments; j++) {
-					if(json.feedbacks[i].comments[j] && json.feedbacks[i].comments[j].user) {
-						comment_users += json.feedbacks[i].comments[j].user;
-						if(j+1 < total_comments) {
-							comment_users += ", ";
-						}
-					}
+                                        if(json.feedbacks[i].comments[j] && json.feedbacks[i].comments[j].user) {
+						commenterArray.push(json.feedbacks[i].comments[j].user);
+                                                uniqueArray = Array.from(new Set(commenterArray));
+                                        }
 				}
-				hrefText += " (" + comment_users + ")";
+				commentAuthors = uniqueArray.toString();
+				hrefText += " (by: " + commentAuthors + ")";
 			}
 			let linkToComments = json.feedbacks[i].url + "?utm_source=Chrome&utm_medium=BrowserExtension&utm_campaign=Chrome";
 			let tagElements = ":contains("+matchedPageDOIs[i]+")";
