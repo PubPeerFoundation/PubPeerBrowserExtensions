@@ -1,7 +1,7 @@
 var pageDOIs=document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi);
 pageDOIs = $.unique(pageDOIs);
 if(window.location.hostname != "pubpeer.com" && pageDOIs.length > 0){
-	let dotcom = "devkey=PubMedChrome";
+	let dotcom = "devkey=4aad283865b213d329ce62661d5a959f";
 
 	new Promise(function(resolve, reject) {
 		let storedDOIs = localStorage.getItem("storedDOIs");
@@ -59,16 +59,14 @@ if(window.location.hostname != "pubpeer.com" && pageDOIs.length > 0){
 			} else if(total_comments > 1){
 				hrefText = total_comments + " comments on PubPeer";
 			}
-			commenterArray = [];
+			let uniqueCommenters = new Set();
 			if(total_comments > 0) {
 				for(let j = 0; j < total_comments; j++) {
-                                        if(json.feedbacks[i].comments[j] && json.feedbacks[i].comments[j].user) {
-						commenterArray.push(json.feedbacks[i].comments[j].user);
-                                                uniqueArray = Array.from(new Set(commenterArray));
-                                        }
+                        if(json.feedbacks[i].comments[j] && json.feedbacks[i].comments[j].user) {
+							uniqueCommenters.add(json.feedbacks[i].comments[j].user);
+                        }
 				}
-				commentAuthors = uniqueArray.toString();
-				hrefText += " (by: " + commentAuthors + ")";
+				hrefText += " (by: " + [...uniqueCommenters].join(", ") + ")";
 			}
 			let linkToComments = json.feedbacks[i].url + "?utm_source=Chrome&utm_medium=BrowserExtension&utm_campaign=Chrome";
 			let tagElements = ":contains("+matchedPageDOIs[i]+")";
@@ -96,8 +94,8 @@ if(window.location.hostname != "pubpeer.com" && pageDOIs.length > 0){
 				}
 				if(!anyAlreadyAdded){
 					$(aDoiElement[k].element).append(
-						$("<p>", { class: "pp_comm" })
-							.append($("<a>", { href: linkToComments, style: "color: rgb(255,255,255); text-decoration: none; font-weight: bold; margin-left: 1em", text: hrefText}))
+						$("<p>", { class: "pp_comm" , style: "margin-left: 1em;" })
+							.append($("<a>", { href: linkToComments, style: "color: rgb(255,255,255); text-decoration: none; font-weight: bold; ", text: hrefText}))
 							.css("background", "#ff9e29")
 					);
 				}
