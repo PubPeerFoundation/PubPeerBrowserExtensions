@@ -10,9 +10,9 @@
    } ],
    "description": "Show links to existing PubPeer comments",
    "icons": {
-      "128": "PP128.png",
-      "16": "PP19.png",
-      "48": "PP48.png"
+      "128": "pubpeer-128x128.png",
+      "16": "pubpeer-16x16.png",
+      "48": "pubpeer-48x48.png"
    },
    "manifest_version": 2,
    "permissions": [
