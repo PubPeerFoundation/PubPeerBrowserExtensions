@@ -97,12 +97,12 @@ if(pageDOIs !== null) {
 					if(!anyAlreadyAdded){
 						$(aDoiElement[k].element).append(
 							$("<p>", { class: "pp_comm" , style: "margin: 0 1em;background-color: #7ACCC8;padding: 5px 8px;border-radius: 6px;display: inline-block;" })
-								.append($('<img>', { style: "vertical-align: middle;padding-right: 8px; width:9.85px; width:14.65px", src: "https://preprod.pubpeer.com/img/logo.svg"}))
+								.append($('<img>', { style: "vertical-align: middle;padding-right: 8px;height:25px", src: "https://preprod.pubpeer.com/img/logo.svg"}))
 								.append($("<a>", { href: linkToComments, style: "color: rgb(255,255,255); text-decoration: none; font-weight: 500;vertical-align: middle;", text: hrefText }))
 						);
 					}
 				}
 			}
 		});
-}
+	}
 }
