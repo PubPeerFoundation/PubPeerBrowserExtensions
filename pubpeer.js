@@ -78,7 +78,7 @@ Element.prototype.parents = function ( selector ) {
   }
 
   function pageNeedsPubPeerLinks () {
-    return unique(pageDOIs).length > 0 || window.location.hostname.indexOf('pubpeer') === -1
+    return unique(pageDOIs).length > 0 && window.location.hostname.indexOf('pubpeer') === -1
   }
 
   function addPubPeerLinks () {
