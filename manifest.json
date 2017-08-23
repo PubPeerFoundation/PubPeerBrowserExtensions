@@ -4,16 +4,20 @@
   "version": "0.3.0",
   "manifest_version": 2,
   "update_url": "https://clients2.google.com/service/update2/crx",
-  "content_scripts": [ 
+  "content_scripts": [
     {
-      "js": [ "jquery-2.1.0.min.js", "PP.js" ],
+      "js": [
+        "pubpeer.js"
+      ],
       "matches": ["*://*/*"],
       "run_at": "document_end"
-    } 
+    }
   ],
   "permissions": [
     "https://api.pubpeer.com/",
-    "https://pubpeer.dev/"
+    "https://pubpeer.com/",
+    "https://pubpeer.dev/",
+    "storage"
   ],
   "icons": {
     "128": "pubpeer-128x128.png",
