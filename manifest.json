@@ -1,12 +1,12 @@
 {
   "name": "PubPeer",
   "description": "Show links to existing PubPeer comments",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "manifest_version": 2,
-  "update_url": "https://clients2.google.com/service/update2/crx",
   "content_scripts": [
     {
       "js": [
+        "sanitizer.js",
         "pubpeer.js"
       ],
       "matches": ["*://*/*"],

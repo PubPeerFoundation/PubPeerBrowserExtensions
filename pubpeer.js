@@ -97,7 +97,11 @@ Element.prototype.parents = function ( selector ) {
         });
       }
     };
-    request.send(JSON.stringify({dois: pageDOIs}));
+    request.send(JSON.stringify({
+      dois: unique(pageDOIs),
+      version: '0.3.2',
+      browser: Browser.name
+    }));
   }
 
   function appendPublicationDetails (publication) {
@@ -123,7 +127,7 @@ Element.prototype.parents = function ( selector ) {
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
       if (aDoiElement[k].element.getElementsByClassName('pp_comm').length === 0) {
         aDoiElement[k].element.insertAdjacentHTML('afterend',
-          `<p class="pp_comm" style="margin: 0 1em;background-color:#7ACCC8;padding: 5px 8px;border-radius:6px;">
+          Sanitizer.escapeHTML`<p class="pp_comm" style="margin: 0 1em;background-color:#7ACCC8;padding: 5px 8px;border-radius:6px;">
             <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;">
             <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
               ${hrefText}
