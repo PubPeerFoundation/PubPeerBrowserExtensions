@@ -1,23 +1,27 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
-
-   "content_scripts": [ {
-      "js": [ "jquery-2.1.0.min.js", "PP.js" ],
-      "matches": ["http://*/*",
-                  "https://*/*"
-                 ],
+  "name": "PubPeer",
+  "description": "Show links to existing PubPeer comments",
+  "version": "0.3.2",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "js": [
+        "sanitizer.js",
+        "pubpeer.js"
+      ],
+      "matches": ["*://*/*"],
       "run_at": "document_end"
-   } ],
-   "description": "Show links to existing PubPeer comments",
-   "icons": {
-      "128": "PP128.png",
-      "16": "PP19.png",
-      "48": "PP48.png"
-   },
-   "manifest_version": 2,
-   "permissions": [
-     "storage"
-   ],
-   "name": "PubPeer",
-   "version": "0.2.2"
+    }
+  ],
+  "permissions": [
+    "https://api.pubpeer.com/",
+    "https://pubpeer.com/",
+    "https://pubpeer.dev/",
+    "storage"
+  ],
+  "icons": {
+    "128": "pubpeer-128x128.png",
+    "16": "pubpeer-16x16.png",
+    "48": "pubpeer-48x48.png"
+  }
 }

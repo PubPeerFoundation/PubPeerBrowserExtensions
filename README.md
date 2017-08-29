@@ -1,2 +1,2 @@
-# chromeExtension
-PubPeer Chrome browser extension
+# pubpeerExtension
+PubPeer browser extension
