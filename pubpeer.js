@@ -105,11 +105,17 @@ Element.prototype.parents = function ( selector ) {
   }
 
   function appendPublicationDetails (publication) {
+    var
+        googleSnippetDiv = "div.s",
+        bingSnippetDiv = "div.b_caption",
+        duckDuckGoSnippetDiv = "div.result__body",
+        snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}`;
+
     let total_comments = publication.total_comments;
     let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
     hrefText += ` on PubPeer (by: ${publication.users})`;
     let linkToComments = publication.url + utm;
-    let unsortedDoiElements = contains("*", publication.id);
+    let unsortedDoiElements = contains(snippetsSelector, publication.id);
     let aDoiElement = [];
     if (unsortedDoiElements.length > 0) {
       for (let m = 0; m < unsortedDoiElements.length; m++) {
