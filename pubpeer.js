@@ -109,7 +109,7 @@ Element.prototype.parents = function ( selector ) {
         googleSnippetDiv = "div.s",
         bingSnippetDiv = "div.b_caption",
         duckDuckGoSnippetDiv = "div.result__body",
-        snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}`;
+        snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
 
     let total_comments = publication.total_comments;
     let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
