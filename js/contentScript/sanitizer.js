@@ -66,7 +66,7 @@
         toString: function () {
           return '[object WrappedHTMLObject]';
         },
-        info: 'This is a wrapped HTML object. See https://developer.mozilla.or'+
+        info: 'This is a wrapped HTML object. See https://developer.mozilla.or' +
           'g/en-US/Firefox_OS/Security/Security_Automation for more.'
       };
     },
@@ -75,7 +75,7 @@
      * underwent security review.
      */
     unwrapSafeHTML: function (...htmlObjects) {
-      var markupList = htmlObjects.map(function(obj) {
+      var markupList = htmlObjects.map(function (obj) {
         return obj.__html;
       });
       return markupList.join('');

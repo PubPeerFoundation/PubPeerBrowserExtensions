@@ -3,25 +3,28 @@
   "description": "Show links to existing PubPeer comments",
   "version": "0.3.3",
   "manifest_version": 2,
-  "content_scripts": [
-    {
-      "js": [
-        "sanitizer.js",
-        "pubpeer.js"
-      ],
-      "matches": ["*://*/*"],
-      "run_at": "document_end"
-    }
-  ],
+  "browser_action": {
+    "default_title": "PubPeer",
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": [
+      "js/browser-polyfill.min.js",
+      "js/background.js"
+    ],
+    "persistent": false
+  },
   "permissions": [
     "https://api.pubpeer.com/",
     "https://pubpeer.com/",
     "https://pubpeer.dev/",
-    "storage"
+    "*://*/*",
+    "storage",
+    "tabs"
   ],
   "icons": {
-    "128": "pubpeer-128x128.png",
-    "16": "pubpeer-16x16.png",
-    "48": "pubpeer-48x48.png"
+    "128": "img/pubpeer-128x128.png",
+    "16": "img/pubpeer-16x16.png",
+    "48": "img/pubpeer-48x48.png"
   }
 }

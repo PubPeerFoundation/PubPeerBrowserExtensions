@@ -1,4 +1,4 @@
-var Browser = ( function () {
+var Browser = (function () {
   'use strict';
 
   if (typeof navigator === 'undefined' || !navigator) {
@@ -8,46 +8,46 @@ var Browser = ( function () {
   var userAgentString = navigator.userAgent;
 
   var browsers = [
-    [ 'Edge', /Edge\/([0-9\._]+)/ ],
-    [ 'Chrome', /(?!Chrom.*OPR)Chrom(?:e|ium)\/([0-9\.]+)(:?\s|$)/ ],
-    [ 'Firefox', /Firefox\/([0-9\.]+)(?:\s|$)/ ],
-    [ 'Safari', /Version\/([0-9\._]+).*Safari/ ]
+    ['Edge', /Edge\/([0-9\._]+)/],
+    ['Chrome', /(?!Chrom.*OPR)Chrom(?:e|ium)\/([0-9\.]+)(:?\s|$)/],
+    ['Firefox', /Firefox\/([0-9\.]+)(?:\s|$)/],
+    ['Safari', /Version\/([0-9\._]+).*Safari/]
   ];
 
-  return browsers.map ( function ( rule ) {
-      if ( rule[1].test( userAgentString ) ) {
-          var match = rule[1].exec(userAgentString);
-          var version = match && match[1].split(/[._]/).slice(0,3);
+  return browsers.map(function (rule) {
+    if (rule[1].test(userAgentString)) {
+      var match = rule[1].exec(userAgentString);
+      var version = match && match[1].split(/[._]/).slice(0, 3);
 
-          if (version && version.length < 3) {
-              Array.prototype.push.apply(version, (version.length == 1) ? [0, 0] : [0]);
-          }
-
-          return {
-              name: rule[0],
-              version: version.join('.')
-          };
+      if (version && version.length < 3) {
+        Array.prototype.push.apply(version, (version.length == 1) ? [0, 0] : [0]);
       }
+
+      return {
+        name: rule[0],
+        version: version.join('.')
+      };
+    }
   }).filter(Boolean).shift();
 })();
-Element.prototype.parents = function ( selector ) {
+Element.prototype.parents = function (selector) {
   'use strict';
   var parents = [],
     element = this,
     hasSelector = selector !== undefined;
 
-  while ( element = element.parentElement ) {
-    if ( element.nodeType !== Node.ELEMENT_NODE ) {
+  while (element = element.parentElement) {
+    if (element.nodeType !== Node.ELEMENT_NODE) {
       continue;
     }
-    if ( !hasSelector || element.matches( selector )) {
-      parents.push( element );
+    if (!hasSelector || element.matches(selector)) {
+      parents.push(element);
     }
   }
 
   return parents;
 };
-(function(Browser) {
+(function (Browser) {
   'use strict';
   var
     url = "https://pubpeer.com",
@@ -55,7 +55,7 @@ Element.prototype.parents = function ( selector ) {
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
     pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [];
 
-  function init () {
+  function init() {
     informExtensionInstalled();
 
     if (pageNeedsPubPeerLinks()) {
@@ -63,25 +63,25 @@ Element.prototype.parents = function ( selector ) {
     }
   }
 
-  function unique ( array ) {
-    return [ ... new Set( array ) ];
+  function unique(array) {
+    return [... new Set(array)];
   }
 
-  function contains ( selector, text ) {
+  function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
-    return [].filter.call(elements, function(element){
+    return [].filter.call(elements, function (element) {
       return RegExp(text).test(element.textContent);
     });
   }
-  function informExtensionInstalled () {
+  function informExtensionInstalled() {
     localStorage.setItem('pubpeer-extension', true);
   }
 
-  function pageNeedsPubPeerLinks () {
+  function pageNeedsPubPeerLinks() {
     return unique(pageDOIs).length > 0 && window.location.hostname.indexOf('pubpeer') === -1
   }
 
-  function addPubPeerLinks () {
+  function addPubPeerLinks() {
     let request = new XMLHttpRequest();
     request.open('POST', address, true);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -92,7 +92,7 @@ Element.prototype.parents = function ( selector ) {
         if (!responseText) {
           return;
         }
-        responseText.feedbacks.forEach(function(publication) {
+        responseText.feedbacks.forEach(function (publication) {
           appendPublicationDetails(publication)
         });
       }
@@ -104,12 +104,12 @@ Element.prototype.parents = function ( selector ) {
     }));
   }
 
-  function appendPublicationDetails (publication) {
+  function appendPublicationDetails(publication) {
     var
-        googleSnippetDiv = "div.s",
-        bingSnippetDiv = "div.b_caption",
-        duckDuckGoSnippetDiv = "div.result__body",
-        snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
+      googleSnippetDiv = "div.s",
+      bingSnippetDiv = "div.b_caption",
+      duckDuckGoSnippetDiv = "div.result__body",
+      snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
 
     let total_comments = publication.total_comments;
     let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
@@ -125,7 +125,7 @@ Element.prototype.parents = function ( selector ) {
           rents: allParents
         });
       }
-      aDoiElement.sort(function(a, b) {
+      aDoiElement.sort(function (a, b) {
         return b.rents - a.rents;
       });
     }
