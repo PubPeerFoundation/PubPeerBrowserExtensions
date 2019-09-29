@@ -1,4 +1,4 @@
-let host = '';
+let host = '', tabId = null;
 
 document.addEventListener("DOMContentLoaded", function(event) {
   setHost();
@@ -16,7 +16,8 @@ const initMessagingEvents = () => {
 
 const setHost = () => {
   browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
-    const url = tabs[0].url;
+    const { url, id } = tabs[0];
+    tabId = id;
     if (typeof url === 'string') {
       host = url.indexOf('//') > -1 ? url.split('//')[1].split('/')[0] : '';
       document.getElementById('host').innerText = host;
@@ -29,11 +30,11 @@ const eventListener = (e) => {
   if (id === 'btn_close') {
     window.close();
   } else if (id === 'btn_disable_once') {
-    browser.runtime.sendMessage({ name: 'disableOnce', host });
+    browser.runtime.sendMessage({ name: 'disableOnce', host, tabId });
   } else if (id === 'btn_disable_forever') {
-    browser.runtime.sendMessage({ name: 'disableForever', host });
+    browser.runtime.sendMessage({ name: 'disableForever', host, tabId });
   } else if (id === 'btn_enable') {
-    browser.runtime.sendMessage({ name: 'enable', host });
+    browser.runtime.sendMessage({ name: 'enable', host, tabId });
   }
 }
 

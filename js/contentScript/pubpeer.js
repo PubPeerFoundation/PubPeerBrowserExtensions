@@ -131,7 +131,7 @@ Element.prototype.parents = function (selector) {
     }
     let elementsWithDois = aDoiElement.length;
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
-      if (aDoiElement[k].element.getElementsByClassName('pp_comm').length === 0) {
+      if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0) {
         aDoiElement[k].element.insertAdjacentHTML('afterend',
           Sanitizer.escapeHTML`<p class="pp_comm" style="margin: 0 1em;background-color:#7ACCC8;padding: 5px 8px;border-radius:6px;">
             <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;">

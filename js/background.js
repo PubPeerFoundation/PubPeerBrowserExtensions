@@ -1,22 +1,25 @@
 let tempDisabledHosts = [];
 const STORAGE_KEY = 'DISABLED_HOSTS';
 
-const listener = async (msg) => {
-  const { name, host } = msg;
+const listener = async (msg, sender) => {
+  const { name, host, tabId } = msg;
   let { [STORAGE_KEY]: disabledHosts } = await browser.storage.local.get(STORAGE_KEY);
   disabledHosts = disabledHosts || [];
   if (name === 'disableOnce') {
     tempDisabledHosts = addItem(host, tempDisabledHosts);
     await browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) });
     browser.runtime.sendMessage({ name: 'close_window' });
+    runRemoveScript(tabId);
   } else if (name === 'disableForever') {
     await browser.storage.local.set({ [STORAGE_KEY]: addItem(host, disabledHosts) });
     tempDisabledHosts = removeItem(host, tempDisabledHosts);
     browser.runtime.sendMessage({ name: 'close_window' });
+    runRemoveScript(tabId);
   } else if (name === 'enable') {
     await browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) });
     tempDisabledHosts = removeItem(host, tempDisabledHosts);
     browser.runtime.sendMessage({ name: 'close_window' });
+    runDisplayScript(host, tabId);
   }
 }
 
@@ -39,7 +42,7 @@ const isValidUrl = url => /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a
 
 const unique = arr => [... new Set(arr)];
 
-const runScript = (host, tabId) => {
+const runDisplayScript = (host, tabId) => {
   browser.storage.local.get(STORAGE_KEY).then(({ [STORAGE_KEY]: disabledHosts }) => {
     disabledHosts = disabledHosts || [];
     if (!disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
@@ -49,11 +52,15 @@ const runScript = (host, tabId) => {
   })
 }
 
+const runRemoveScript = (tabId) => {
+  browser.tabs.executeScript(tabId, { file: 'js/contentScript/removePubPeerMarks.js' });
+}
+
 const initTabsEvent = () => {
   browser.tabs.onUpdated.addListener((tabId, { status }, { url }) => {
     if (isValidUrl(url) && status === 'complete') {
       const host = url.indexOf('//') > -1 ? url.split('//')[1].split('/')[0] : '';
-      runScript(host, tabId);
+      runDisplayScript(host, tabId);
     }
   });
 }
