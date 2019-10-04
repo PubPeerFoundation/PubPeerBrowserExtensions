@@ -53,6 +53,7 @@ Element.prototype.parents = function (selector) {
     url = "https://pubpeer.com",
     address = `${url}/v3/publications?devkey=PubMed${Browser.name}`,
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
+    articleTitles = [],
     pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [];
 
   function init() {
@@ -73,6 +74,7 @@ Element.prototype.parents = function (selector) {
       return RegExp(text).test(element.textContent);
     });
   }
+
   function informExtensionInstalled() {
     localStorage.setItem('pubpeer-extension', true);
   }
@@ -95,13 +97,37 @@ Element.prototype.parents = function (selector) {
         responseText.feedbacks.forEach(function (publication) {
           appendPublicationDetails(publication)
         });
+        addTopBar()
       }
     };
+
     request.send(JSON.stringify({
       dois: unique(pageDOIs),
       version: '0.3.2',
       browser: Browser.name
     }));
+  }
+
+  function addTopBar () {
+    articleTitles = unique(articleTitles);
+    if (articleTitles.length > 1) {
+      let queryUrl = url;
+      if (articleTitles.length) {
+        const query = encodeURIComponent(`title: ("${articleTitles.join('" OR "')}")`)
+        queryUrl += `/search?q=${query}`;
+      }
+      let pElement = document.createElement('p');
+      pElement.className = 'pp_articles'
+      pElement.style = 'margin: 0;background-color:#7ACCC8;text-align: center;padding: 5px 8px;font-size: 13px;'
+      const hrefText = `There are ${articleTitles.length} articles on this page with PubPeer comments`;
+      pElement.innerHTML = `
+        <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;">
+        <a href="${queryUrl}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+          ${hrefText}
+        </a>
+      `
+      document.body.prepend(pElement);
+    }
   }
 
   function appendPublicationDetails(publication) {
@@ -133,13 +159,18 @@ Element.prototype.parents = function (selector) {
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
       if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0) {
         aDoiElement[k].element.insertAdjacentHTML('afterend',
-          Sanitizer.escapeHTML`<p class="pp_comm" style="margin: 0 1em;background-color:#7ACCC8;padding: 5px 8px;border-radius:6px;">
-            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;">
-            <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
-              ${hrefText}
-            </a>
-          </p>`
+          Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
+            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+            <div style="align-items: center;display: flex;">
+              <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+                ${hrefText}
+              </a>
+            </div>
+          </div>`
         );
+        if (publication.title) {
+          articleTitles.push(publication.title);
+        }
       }
     }
   }

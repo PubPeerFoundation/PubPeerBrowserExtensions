@@ -11,13 +11,9 @@
     "scripts": [
       "js/browser-polyfill.min.js",
       "js/background.js"
-    ],
-    "persistent": false
+    ]
   },
   "permissions": [
-    "https://api.pubpeer.com/",
-    "https://pubpeer.com/",
-    "https://pubpeer.dev/",
     "*://*/*",
     "storage",
     "tabs"
