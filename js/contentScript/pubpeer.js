@@ -108,18 +108,40 @@ Element.prototype.parents = function (selector) {
     }));
   }
 
+  function isDOMElement (obj) {
+    return !!(obj && obj.nodeType === 1);
+  }
+
+  function onAfterAddingTopBar () {
+    if (location.hostname === 'www.cell.com') {
+      const headerElement = document.querySelector('header.header.base.fixed');
+      const mainContent = document.querySelector('main.content');
+      const articleElement = document.querySelector('p.pp_articles');
+      if (isDOMElement(headerElement) && isDOMElement(mainContent) && isDOMElement(articleElement)) {
+        headerElement.style.top = '35px';
+        mainContent.style.paddingTop = '117px';
+        articleElement.style.position = 'fixed';
+        articleElement.style.zIndex = 1000;
+        articleElement.style.width = '100vw';
+      }
+    }
+  }
+
   function addTopBar () {
     articleTitles = unique(articleTitles);
-    if (articleTitles.length > 1) {
+    const articleCount = articleTitles.length;
+    if (articleCount > 0) {
       let queryUrl = url;
-      if (articleTitles.length) {
+      if (articleCount) {
         const query = encodeURIComponent(`title: ("${articleTitles.join('" OR "')}")`)
         queryUrl += `/search?q=${query}`;
       }
       let pElement = document.createElement('p');
       pElement.className = 'pp_articles'
       pElement.style = 'margin: 0;background-color:#7ACCC8;text-align: center;padding: 5px 8px;font-size: 13px;'
-      const hrefText = `There are ${articleTitles.length} articles on this page with PubPeer comments`;
+      const hrefText = articleCount === 1 ?
+        `There is ${articleCount} article on this page with PubPeer comments` :
+        `There are ${articleCount} articles on this page with PubPeer comments`;
       pElement.innerHTML = `
         <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;">
         <a href="${queryUrl}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
@@ -127,6 +149,7 @@ Element.prototype.parents = function (selector) {
         </a>
       `
       document.body.prepend(pElement);
+      onAfterAddingTopBar();
     }
   }
 
