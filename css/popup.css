@@ -1,0 +1,106 @@
+html, body {
+  width: 385px;
+  height: 285px;
+  font-family: Helvetica, Arial, Sans-Serif;
+  margin: 0;
+}
+
+.container {
+  padding: 20px;
+  width: 345px;
+  height: 245px;
+}
+
+.popup-header-actions {
+  text-align: right;
+}
+
+.btn-close {
+  font-size: 24px;
+  font-weight: 100;
+  line-height: 17px;
+  color: #000;
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  color: gray;
+}
+
+.main-container {
+  padding: 0 20px 20px 20px;
+  width: 305px;
+  height: 225px;
+}
+
+.header {
+  display: flex;
+  margin-top: -10px;
+}
+
+.logo {
+  box-sizing: border-box;
+  color: #7accc8;
+  display: inline-block;
+  fill: #7accc8;
+  height: 42px;
+  line-height: 18.4px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  stroke: #7accc8;
+  text-size-adjust: 100%;
+  transform-origin: 16px 23.7969px;
+  vertical-align: middle;
+  width: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+.logo-title {
+  line-height: 42px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding-left: 16px;
+  color: #696969;
+}
+
+.content {
+  padding-top: 23px;
+}
+
+.description {
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin: 4px 0;
+}
+
+.actions {
+  padding-top: 8px;
+}
+
+.btn {
+  width: 281px;
+  height: 28px;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  outline: 0;
+  border-radius: 5px;
+  margin: 6px 12px;
+  border: 0;
+}
+
+.btn-green {
+  background: #6ac2bc;
+  color: white;
+}
+
+.btn-white {
+  background: white;
+  font-weight: 600;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
