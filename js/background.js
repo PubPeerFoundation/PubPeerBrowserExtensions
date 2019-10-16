@@ -3,24 +3,28 @@ const STORAGE_KEY = 'DISABLED_HOSTS';
 
 const listener = async (msg, sender) => {
   const { name, host, tabId } = msg;
-  let { [STORAGE_KEY]: disabledHosts } = await browser.storage.local.get(STORAGE_KEY);
-  disabledHosts = disabledHosts || [];
-  if (name === 'disableOnce') {
-    tempDisabledHosts = addItem(host, tempDisabledHosts);
-    await browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) });
-    browser.runtime.sendMessage({ name: 'close_window' });
-    runRemoveScript(tabId);
-  } else if (name === 'disableForever') {
-    await browser.storage.local.set({ [STORAGE_KEY]: addItem(host, disabledHosts) });
-    tempDisabledHosts = removeItem(host, tempDisabledHosts);
-    browser.runtime.sendMessage({ name: 'close_window' });
-    runRemoveScript(tabId);
-  } else if (name === 'enable') {
-    await browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) });
-    tempDisabledHosts = removeItem(host, tempDisabledHosts);
-    browser.runtime.sendMessage({ name: 'close_window' });
-    runDisplayScript(host, tabId);
-  }
+  browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
+    disabledHosts = disabledHosts || [];
+    if (name === 'disableOnce') {
+      tempDisabledHosts = addItem(host, tempDisabledHosts);
+      browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
+        browser.runtime.sendMessage({ name: 'close_window' });
+        runRemoveScript(tabId);
+      });
+    } else if (name === 'disableForever') {
+      browser.storage.local.set({ [STORAGE_KEY]: addItem(host, disabledHosts) }, () => {
+        tempDisabledHosts = removeItem(host, tempDisabledHosts);
+        browser.runtime.sendMessage({ name: 'close_window' });
+        runRemoveScript(tabId);
+      });
+    } else if (name === 'enable') {
+      browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
+        tempDisabledHosts = removeItem(host, tempDisabledHosts);
+        browser.runtime.sendMessage({ name: 'close_window' });
+        runDisplayScript(host, tabId);
+      });
+    }
+  });
 }
 
 const removeItem = (item, arr) => {
@@ -43,13 +47,13 @@ const isValidUrl = url => /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a
 const unique = arr => [... new Set(arr)];
 
 const runDisplayScript = (host, tabId) => {
-  browser.storage.local.get(STORAGE_KEY).then(({ [STORAGE_KEY]: disabledHosts }) => {
+  browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
     disabledHosts = disabledHosts || [];
     if (!disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js' });
     }
-  })
+  });
 }
 
 const runRemoveScript = (tabId) => {

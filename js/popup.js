@@ -15,7 +15,7 @@ const initMessagingEvents = () => {
 }
 
 const setHost = () => {
-  browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
+  browser.tabs.query({ active: true, currentWindow: true }, tabs => {
     const { url, id } = tabs[0];
     tabId = id;
     if (typeof url === 'string') {
