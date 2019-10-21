@@ -185,9 +185,13 @@ Element.prototype.parents = function (selector) {
       snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
 
     let total_comments = publication.total_comments;
-    let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
-    hrefText += ` on PubPeer (by: ${publication.users})`;
+    let hrefText = '';
     let linkToComments = publication.url + utm;
+    if (total_comments === 1) {
+      hrefText = 'This article has been commented on PubPeer';
+    } else {
+      hrefText = `${total_comments} comments on PubPeer (by: ${publication.users})`;
+    }
     let unsortedDoiElements = contains(snippetsSelector, publication.id);
     let aDoiElement = [];
     if (unsortedDoiElements.length > 0) {
@@ -203,18 +207,26 @@ Element.prototype.parents = function (selector) {
       });
     }
     let elementsWithDois = aDoiElement.length;
+    let bannerHTML = total_comments === 1 ?
+      Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
+        <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+        <div style="align-items: center;display: flex;">
+          <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+            ${hrefText}
+          </a>
+        </div>
+      </div>` :
+      Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
+        <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+        <div style="align-items: center;display: flex;">
+          <span style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+            ${hrefText}
+          </span>
+        </div>
+      </div>`;
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
       if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0) {
-        aDoiElement[k].element.insertAdjacentHTML('afterend',
-          Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
-            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
-            <div style="align-items: center;display: flex;">
-              <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
-                ${hrefText}
-              </a>
-            </div>
-          </div>`
-        );
+        aDoiElement[k].element.insertAdjacentHTML('afterend', bannerHTML);
         if (publication.title) {
           articleTitles.push(publication.title);
         }
