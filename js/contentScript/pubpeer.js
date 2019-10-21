@@ -113,23 +113,37 @@ Element.prototype.parents = function (selector) {
   }
 
   function onAfterAddingTopBar () {
-    if (location.hostname === 'www.cell.com') {
-      const headerElement = document.querySelector('header.header.base.fixed');
-      const articleElement = document.querySelector('p.pp_articles');
-      if (isDOMElement(headerElement) && isDOMElement(articleElement)) {
-        headerElement.style.top = '35px';
-        articleElement.style.zIndex = 1000;
-        articleElement.style.width = '100vw';
-      }
+    const articleElement = document.querySelector('p.pp_articles');
+    switch (location.hostname) {
+      case 'www.cell.com':
+        const headerElement = document.querySelector('header.header.base.fixed');
+        if (isDOMElement(headerElement) && isDOMElement(articleElement)) {
+          headerElement.style.top = '35px';
+          articleElement.style.zIndex = 1000;
+          articleElement.style.width = '100vw';
+        }
+        break;
+      case 'journals.plos.org':
+        document.body.style.height = 'auto';
+        break;
+      default:
+        break;
     }
   }
 
   function onAfterRemovingTopBar () {
-    if (location.hostname === 'www.cell.com') {
-      const headerElement = document.querySelector('header.header.base.fixed');
-      if (isDOMElement(headerElement)) {
-        headerElement.style.top = 0;
-      }
+    switch (location.hostname) {
+      case 'www.cell.com':
+        const headerElement = document.querySelector('header.header.base.fixed');
+        if (isDOMElement(headerElement)) {
+          headerElement.style.top = 0;
+        }
+        break;
+      case 'journals.plos.org':
+        document.body.style.height = '100%';
+        break;
+      default:
+        break;
     }
   }
 
