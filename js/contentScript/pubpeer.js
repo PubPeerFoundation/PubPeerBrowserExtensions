@@ -150,14 +150,15 @@ Element.prototype.parents = function (selector) {
   function addTopBar () {
     articleTitles = unique(articleTitles);
     const articleCount = articleTitles.length;
-    if (articleCount > 0) {
+    const topbarClassName = 'pp_articles';
+    if (articleCount > 0 && document.getElementsByClassName(topbarClassName).length === 0) {
       let queryUrl = url;
       if (articleCount) {
         const query = encodeURIComponent(`title: ("${articleTitles.join('" OR "')}")`)
         queryUrl += `/search?q=${query}`;
       }
       let pElement = document.createElement('p');
-      pElement.className = 'pp_articles'
+      pElement.className = topbarClassName;
       pElement.style = `
         position: -webkit-sticky;
         top: 0;
