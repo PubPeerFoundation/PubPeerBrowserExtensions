@@ -113,32 +113,63 @@ Element.prototype.parents = function (selector) {
   }
 
   function onAfterAddingTopBar () {
-    if (location.hostname === 'www.cell.com') {
-      const headerElement = document.querySelector('header.header.base.fixed');
-      const mainContent = document.querySelector('main.content');
-      const articleElement = document.querySelector('p.pp_articles');
-      if (isDOMElement(headerElement) && isDOMElement(mainContent) && isDOMElement(articleElement)) {
-        headerElement.style.top = '35px';
-        mainContent.style.paddingTop = '117px';
-        articleElement.style.position = 'fixed';
-        articleElement.style.zIndex = 1000;
-        articleElement.style.width = '100vw';
-      }
+    const articleElement = document.querySelector('p.pp_articles');
+    switch (location.hostname) {
+      case 'www.cell.com':
+        const headerElement = document.querySelector('header.header.base.fixed');
+        if (isDOMElement(headerElement) && isDOMElement(articleElement)) {
+          headerElement.style.top = '35px';
+          articleElement.style.zIndex = 1000;
+          articleElement.style.width = '100vw';
+        }
+        break;
+      case 'journals.plos.org':
+        document.body.style.height = 'auto';
+        break;
+      default:
+        break;
+    }
+  }
+
+  function onAfterRemovingTopBar () {
+    switch (location.hostname) {
+      case 'www.cell.com':
+        const headerElement = document.querySelector('header.header.base.fixed');
+        if (isDOMElement(headerElement)) {
+          headerElement.style.top = 0;
+        }
+        break;
+      case 'journals.plos.org':
+        document.body.style.height = '100%';
+        break;
+      default:
+        break;
     }
   }
 
   function addTopBar () {
     articleTitles = unique(articleTitles);
     const articleCount = articleTitles.length;
-    if (articleCount > 0) {
+    const topbarClassName = 'pp_articles';
+    if (articleCount > 0 && document.getElementsByClassName(topbarClassName).length === 0) {
       let queryUrl = url;
       if (articleCount) {
         const query = encodeURIComponent(`title: ("${articleTitles.join('" OR "')}")`)
         queryUrl += `/search?q=${query}`;
       }
       let pElement = document.createElement('p');
-      pElement.className = 'pp_articles'
-      pElement.style = 'margin: 0;background-color:#7ACCC8;text-align: center;padding: 5px 8px;font-size: 13px;'
+      pElement.className = topbarClassName;
+      pElement.style = `
+        position: -webkit-sticky;
+        top: 0;
+        position: sticky;
+        z-index: 9999;
+        margin: 0;
+        background-color:#7ACCC8;
+        text-align: center;
+        padding: 5px 8px;
+        font-size: 13px;
+      `
       const hrefText = articleCount === 1 ?
         `There is ${articleCount} article on this page with PubPeer comments` :
         `There are ${articleCount} articles on this page with PubPeer comments`;
@@ -147,9 +178,17 @@ Element.prototype.parents = function (selector) {
         <a href="${queryUrl}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
           ${hrefText}
         </a>
-      `
+        <div id="btn-close-pubpeer-article-summary" style="float: right; font-size: 20px;line-height: 24px; padding-right: 10px; cursor: pointer; user-select: none;color: white;">×</div>
+      `;
       document.body.prepend(pElement);
       onAfterAddingTopBar();
+      const closeElement = document.getElementById('btn-close-pubpeer-article-summary');
+      if (closeElement) {
+        closeElement.onclick = function () {
+          this.parentNode.remove();
+          onAfterRemovingTopBar();
+        }
+      }
     }
   }
 
@@ -161,9 +200,13 @@ Element.prototype.parents = function (selector) {
       snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
 
     let total_comments = publication.total_comments;
-    let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
-    hrefText += ` on PubPeer (by: ${publication.users})`;
+    let hrefText = '';
     let linkToComments = publication.url + utm;
+    if (total_comments === 1) {
+      hrefText = 'This article has been commented on PubPeer';
+    } else {
+      hrefText = `${total_comments} comments on PubPeer (by: ${publication.users})`;
+    }
     let unsortedDoiElements = contains(snippetsSelector, publication.id);
     let aDoiElement = [];
     if (unsortedDoiElements.length > 0) {
@@ -179,18 +222,26 @@ Element.prototype.parents = function (selector) {
       });
     }
     let elementsWithDois = aDoiElement.length;
+    let bannerHTML = total_comments === 1 ?
+      Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
+        <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+        <div style="align-items: center;display: flex;">
+          <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+            ${hrefText}
+          </a>
+        </div>
+      </div>` :
+      Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
+        <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+        <div style="align-items: center;display: flex;">
+          <span style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
+            ${hrefText}
+          </span>
+        </div>
+      </div>`;
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
       if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0) {
-        aDoiElement[k].element.insertAdjacentHTML('afterend',
-          Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
-            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
-            <div style="align-items: center;display: flex;">
-              <a href="${linkToComments}" style="color:rgb(255,255,255);text-decoration:none;font-weight:600;vertical-align:middle;">
-                ${hrefText}
-              </a>
-            </div>
-          </div>`
-        );
+        aDoiElement[k].element.insertAdjacentHTML('afterend', bannerHTML);
         if (publication.title) {
           articleTitles.push(publication.title);
         }
