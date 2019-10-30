@@ -72,7 +72,7 @@ Element.prototype.parents = function (selector) {
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     return [].filter.call(elements, function (element) {
-      return RegExp(text).test(element.textContent);
+      return RegExp(text, 'i').test(element.textContent);
     });
   }
 
@@ -104,7 +104,7 @@ Element.prototype.parents = function (selector) {
 
     request.send(JSON.stringify({
       dois: unique(pageDOIs),
-      version: '0.3.2',
+      version: '0.3.3',
       browser: Browser.name
     }));
   }
@@ -167,7 +167,7 @@ Element.prototype.parents = function (selector) {
       `
       const hrefText = articleCount === 1 ?
         `
-          <a href="${publications[0].url + utm}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;">
+          <a href="${publications[0].url + utm}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;border: none;">
             [${publications[0].title}] has comments on PubPeer
           </a>
         ` :
@@ -225,7 +225,7 @@ Element.prototype.parents = function (selector) {
           Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
             <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
             <div style="align-items: center;display: flex;">
-              <a href="${linkToComments}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;">
+              <a href="${linkToComments}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;border: none;">
                 ${hrefText}
               </a>
             </div>
