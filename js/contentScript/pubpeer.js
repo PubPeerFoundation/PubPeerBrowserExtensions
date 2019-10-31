@@ -55,7 +55,9 @@ Element.prototype.parents = function (selector) {
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
     publicationIds = [],
     publications = [],
-    pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [];
+    pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [],
+    pagePMIDs = document.body.innerText.match(/(?<=PMID:\s)([0-9]*)/gi) || [],
+    isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length;
 
   function init() {
     informExtensionInstalled();
@@ -72,7 +74,7 @@ Element.prototype.parents = function (selector) {
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     return [].filter.call(elements, function (element) {
-      return RegExp(text).test(element.textContent);
+      return RegExp(text, 'i').test(element.textContent);
     });
   }
 
@@ -81,7 +83,7 @@ Element.prototype.parents = function (selector) {
   }
 
   function pageNeedsPubPeerLinks() {
-    return unique(pageDOIs).length > 0 && window.location.hostname.indexOf('pubpeer') === -1
+    return isPubMed ? unique(pagePMIDs).length > 0 : unique(pageDOIs).length > 0 && window.location.hostname.indexOf('pubpeer') === -1
   }
 
   function addPubPeerLinks() {
@@ -96,17 +98,24 @@ Element.prototype.parents = function (selector) {
           return;
         }
         responseText.feedbacks.forEach(function (publication) {
-          appendPublicationDetails(publication)
+          appendPublicationDetails(publication);
         });
-        addTopBar()
+        addTopBar();
       }
     };
 
-    request.send(JSON.stringify({
-      dois: unique(pageDOIs),
-      version: '0.3.2',
+    let param = {
+      version: '0.3.3',
       browser: Browser.name
-    }));
+    }
+
+    if (isPubMed) {
+      param.pmids = unique(pagePMIDs);
+    } else {
+      param.dois = unique(pageDOIs);
+    }
+
+    request.send(JSON.stringify(param));
   }
 
   function isDOMElement (obj) {
