@@ -56,7 +56,7 @@ Element.prototype.parents = function (selector) {
     publicationIds = [],
     publications = [],
     pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [],
-    pagePMIDs = document.body.innerText.match(/(?<=PMID:\s)([0-9]*)/gi) || [],
+    pagePMIDs = (document.body.innerText.match(/(PMID:\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
     isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length;
 
   function init() {
