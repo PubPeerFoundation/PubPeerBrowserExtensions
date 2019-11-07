@@ -55,7 +55,16 @@ Element.prototype.parents = function (selector) {
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
     publicationIds = [],
     publications = [],
-    pageDOIs = document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || [];
+    uriEncodedDOIs = {},
+    pageDOIs = (document.body.innerText.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
+      const decodedDOI = decodeURIComponent(doi);
+      if (doi !== decodedDOI) {
+        uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;
+      }
+      return decodedDOI;
+    }),
+    pagePMIDs = (document.body.innerText.match(/(PMID:\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
+    isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length || !pageDOIs.length;
 
   function init() {
     informExtensionInstalled();
@@ -72,7 +81,10 @@ Element.prototype.parents = function (selector) {
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     return [].filter.call(elements, function (element) {
-      return RegExp(text, 'i').test(element.textContent);
+      if (typeof element.innerText === 'string') {
+        return element.innerText.toLowerCase().includes(text.toLowerCase());
+      }
+      return false;
     });
   }
 
@@ -81,7 +93,7 @@ Element.prototype.parents = function (selector) {
   }
 
   function pageNeedsPubPeerLinks() {
-    return unique(pageDOIs).length > 0 && window.location.hostname.indexOf('pubpeer') === -1
+    return (unique(pageDOIs).length > 0 || unique(pagePMIDs).length > 0) && window.location.hostname.indexOf('pubpeer') === -1;
   }
 
   function addPubPeerLinks() {
@@ -96,21 +108,33 @@ Element.prototype.parents = function (selector) {
           return;
         }
         responseText.feedbacks.forEach(function (publication) {
-          appendPublicationDetails(publication)
+          appendPublicationDetails(publication);
         });
-        addTopBar()
+        addTopBar();
       }
     };
 
-    request.send(JSON.stringify({
-      dois: unique(pageDOIs),
-      version: '0.3.3',
+    let param = {
+      version: '0.3.4',
       browser: Browser.name
-    }));
+    }
+
+    if (isPubMed) {
+      param.pmids = unique(pagePMIDs);
+    } else {
+      param.dois = unique(pageDOIs);
+    }
+
+    request.send(JSON.stringify(param));
   }
 
   function isDOMElement (obj) {
     return !!(obj && obj.nodeType === 1);
+  }
+
+  function isVisible (el) {
+    const style = window.getComputedStyle(el);
+    return !(el.offsetParent === null || style.display === 'none')
   }
 
   function onAfterAddingTopBar () {
@@ -161,7 +185,7 @@ Element.prototype.parents = function (selector) {
         z-index: 9999;
         margin: 0;
         background-color:#7ACCC8;
-        text-align: center;
+        text-align: center !important;
         padding: 5px 8px;
         font-size: 13px;
       `
@@ -205,6 +229,9 @@ Element.prototype.parents = function (selector) {
     hrefText += ` on PubPeer (by: ${publication.users})`;
     let linkToComments = publication.url + utm;
     let unsortedDoiElements = contains(snippetsSelector, publication.id);
+    if (!unsortedDoiElements.length && !isPubMed && Object.keys(uriEncodedDOIs).includes(publication.id.toLowerCase())) {
+      unsortedDoiElements = contains(snippetsSelector, uriEncodedDOIs[publication.id.toLowerCase()]);
+    }
     let aDoiElement = [];
     if (unsortedDoiElements.length > 0) {
       for (let m = 0; m < unsortedDoiElements.length; m++) {
@@ -220,7 +247,7 @@ Element.prototype.parents = function (selector) {
     }
     let elementsWithDois = aDoiElement.length;
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
-      if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0) {
+      if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0 && isVisible(aDoiElement[k].element)) {
         aDoiElement[k].element.insertAdjacentHTML('afterend',
           Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
             <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
