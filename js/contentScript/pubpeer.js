@@ -56,7 +56,7 @@ Element.prototype.parents = function (selector) {
     publicationIds = [],
     publications = [],
     uriEncodedDOIs = {},
-    pageDOIs = (document.body.innerText.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
+    pageDOIs = (document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
       const decodedDOI = decodeURIComponent(doi);
       if (doi !== decodedDOI) {
         uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;
@@ -108,7 +108,9 @@ Element.prototype.parents = function (selector) {
           return;
         }
         responseText.feedbacks.forEach(function (publication) {
-          appendPublicationDetails(publication);
+          if (publication.total_comments > 0) {
+            appendPublicationDetails(publication);
+          }
         });
         addTopBar();
       }
@@ -222,7 +224,7 @@ Element.prototype.parents = function (selector) {
       googleSnippetDiv = "div.s",
       bingSnippetDiv = "div.b_caption",
       duckDuckGoSnippetDiv = "div.result__body",
-      snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, span`;
+      snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, a, span`;
 
     let total_comments = publication.total_comments;
     let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
