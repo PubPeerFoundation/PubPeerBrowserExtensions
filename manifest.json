@@ -1,7 +1,7 @@
 {
   "name": "PubPeer",
   "description": "Show links to existing PubPeer comments",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "manifest_version": 2,
   "author": "Pubpeer Foundation",
   "browser_action": {
