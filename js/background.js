@@ -1,4 +1,8 @@
 let tempDisabledHosts = [];
+const webStoreHosts = [
+  'chrome.google.com',
+  'addons.mozilla.org'
+];
 const STORAGE_KEY = 'DISABLED_HOSTS';
 
 const listener = async (msg, sender) => {
@@ -49,7 +53,7 @@ const unique = arr => [... new Set(arr)];
 const runDisplayScript = (host, tabId) => {
   browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
     disabledHosts = disabledHosts || [];
-    if (!disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
+    if (!webStoreHosts.includes(host) && !disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js' });
     }
