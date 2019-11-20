@@ -299,19 +299,19 @@ Element.prototype.parents = function (selector) {
         hrefText = 'Additional information on PubPeer';
       } else if (publicationType === 'RETRACTED') {
         if (total_comments === 0) {
-          hrefText = 'This article has been retracted on PubPeer';
+          hrefText = 'Retracted on PubPeer';
         } else if (total_comments === 1) {
-          hrefText = 'This article has been retracted and there is a comment on PubPeer'
+          hrefText = 'Retracted with a comment on PubPeer'
         } else {
-          hrefText = `This article has been retracted and there are ${total_comments} comments on PubPeer`;
+          hrefText = `Retracted with ${total_comments} comments on PubPeer`;
         }
       } else if (publicationType === 'EXPRESSION OF CONCERN') {
         if (total_comments === 0) {
-          hrefText = 'This article has an expression of concern on PubPeer';
+          hrefText = 'Expression of concern on PubPeer';
         } else if (total_comments === 1) {
-          hrefText = 'This article has an expression of concern and there is a comment on PubPeer'
+          hrefText = 'Expression of concern with a comment on PubPeer'
         } else {
-          hrefText = `This article has an expression of concern and there are ${total_comments} comments on PubPeer`;
+          hrefText = `Expression of concern with ${total_comments} comments on PubPeer`;
         }
       }
       if (total_comments > 0) {
