@@ -65,7 +65,7 @@ Element.prototype.parents = function (selector) {
       }
       return decodedDOI;
     }),
-    pagePMIDs = (document.body.innerText.match(/(PMID:\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
+    pagePMIDs = (document.body.innerText.replace(/\n/g, '').match(/(PMID:?\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
     isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length || !pageDOIs.length;
 
   function init() {
@@ -114,18 +114,16 @@ Element.prototype.parents = function (selector) {
           return;
         }
         feedbacks = uniqueByProperty(responseText.feedbacks, 'id'); // Make sure the feedbacks are unique by id
-        determinePublicationType();
+        determinePageType();
         feedbacks.forEach(function (publication) {
-          if (publication.total_comments > 0 && type === '') {
-            appendPublicationDetails(publication);
-          }
+          appendPublicationDetails(publication);
         });
         addTopBar();
       }
     };
 
     let param = {
-      version: '1.0.0',
+      version: '1.0.2',
       browser: Browser.name
     }
 
@@ -182,21 +180,31 @@ Element.prototype.parents = function (selector) {
     }
   }
 
-  function determinePublicationType () {
-    if (feedbacks.length === 1 && feedbacks[0].updates && feedbacks[0].updates.length) {
-      switch (feedbacks[0].updates[0].type) {
+  function getPublicationType (publication) {
+    let publicationType = '';
+    if (publication.updates && publication.updates.length) {
+      switch (publication.updates[0].type) {
         case 'BLOGGED':
         case 'RETRACTED':
         case 'EXPRESSION OF CONCERN':
-          type = feedbacks[0].updates[0].type;
+          publicationType = publication.updates[0].type;
           break;
         default:
-          type = '';
+          publicationType = '';
           break;
       }
-      if (type === 'BLOGGED' && feedbacks[0].total_comments > 0) {
+      if (publicationType === 'BLOGGED' && publication.total_comments > 0) {
         type = '';
       }
+    }
+    return publicationType;
+  }
+
+  function determinePageType () {
+    if (feedbacks.length === 1) {
+      type = getPublicationType(feedbacks[0]);
+    } else {
+      type = '';
     }
   }
 
@@ -282,9 +290,37 @@ Element.prototype.parents = function (selector) {
       duckDuckGoSnippetDiv = "div.result__body",
       snippetsSelector = `${googleSnippetDiv}, ${bingSnippetDiv}, ${duckDuckGoSnippetDiv}, div, a, span`;
 
+    const publicationType = getPublicationType(publication);
+    const bgColor = publicationType === 'RETRACTED' || publicationType === 'EXPRESSION OF CONCERN' ? '#EF5753' : '#7ACCC8';
     let total_comments = publication.total_comments;
-    let hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
-    hrefText += ` on PubPeer (by: ${publication.users})`;
+    let hrefText = '';
+    if (publicationType !== '') {
+      if (publicationType === 'BLOGGED') {
+        hrefText = 'Additional information on PubPeer';
+      } else if (publicationType === 'RETRACTED') {
+        if (total_comments === 0) {
+          hrefText = 'This article has been retracted on PubPeer';
+        } else if (total_comments === 1) {
+          hrefText = 'This article has been retracted and there is a comment on PubPeer'
+        } else {
+          hrefText = `This article has been retracted and there are ${total_comments} comments on PubPeer`;
+        }
+      } else if (publicationType === 'EXPRESSION OF CONCERN') {
+        if (total_comments === 0) {
+          hrefText = 'This article has an expression of concern on PubPeer';
+        } else if (total_comments === 1) {
+          hrefText = 'This article has an expression of concern and there is a comment on PubPeer'
+        } else {
+          hrefText = `This article has an expression of concern and there are ${total_comments} comments on PubPeer`;
+        }
+      }
+      if (total_comments > 0) {
+        hrefText += ` (by: ${publication.users})`;
+      }
+    } else {
+      hrefText = (total_comments == 1) ? `1 comment` : `${total_comments} comments`;
+      hrefText += ` on PubPeer (by: ${publication.users})`;
+    }
     let linkToComments = publication.url + utm;
     let unsortedDoiElements = contains(snippetsSelector, publication.id);
     if (!unsortedDoiElements.length && !isPubMed && Object.keys(uriEncodedDOIs).includes(publication.id.toLowerCase())) {
@@ -307,8 +343,8 @@ Element.prototype.parents = function (selector) {
     for (let k = 0; k < elementsWithDois; k++) { //try each element that contains a matched DOI
       if (aDoiElement[k].element.parentNode.getElementsByClassName('pp_comm').length === 0 && isVisible(aDoiElement[k].element)) {
         aDoiElement[k].element.insertAdjacentHTML('afterend',
-          Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color:#7ACCC8;padding: 5px 8px;font-size: 13px;border-radius:6px;">
-            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color:#7ACCC8;"><img>
+          Sanitizer.escapeHTML`<div class="pp_comm" style="margin: 1rem 0;display: flex;width: calc(100% - 16px);background-color: ${bgColor};padding: 5px 8px;font-size: 13px;border-radius:6px;">
+            <img src="${url}/img/logo.svg"; style="vertical-align:middle;padding-right:8px;height:25px;background-color: ${bgColor};"><img>
             <div style="align-items: center;display: flex;">
               <a href="${linkToComments}" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;border: none;">
                 ${hrefText}
