@@ -65,7 +65,7 @@ Element.prototype.parents = function (selector) {
       }
       return decodedDOI;
     }),
-    pagePMIDs = (document.body.innerText.match(/(PMID:\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
+    pagePMIDs = (document.body.innerText.replace(/\n/g, '').match(/(PMID:?\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
     isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length || !pageDOIs.length;
 
   function init() {
@@ -123,7 +123,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.0.1',
+      version: '1.0.2',
       browser: Browser.name
     }
 
