@@ -1,5 +1,5 @@
 {
-  "name": "PubPeer",
+  "name": "PubPeer Browser Extension",
   "description": "Show links to existing PubPeer comments",
   "version": "1.0.2",
   "manifest_version": 2,

@@ -46,14 +46,11 @@ const addItem = (item, arr) => {
   return [];
 };
 
-const isValidUrl = url => /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/.test(url);
-
-const unique = arr => [... new Set(arr)];
-
 const runDisplayScript = (host, tabId) => {
   browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
     disabledHosts = disabledHosts || [];
     if (!webStoreHosts.includes(host) && !disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
+      browser.tabs.executeScript(tabId, { file: 'js/utils.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js' });
     }
