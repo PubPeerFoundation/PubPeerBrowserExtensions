@@ -115,7 +115,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.1.0',
+      version: '1.2.1',
       browser: Browser.name
     }
 
