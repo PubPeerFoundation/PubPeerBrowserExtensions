@@ -58,7 +58,7 @@ Element.prototype.parents = function (selector) {
     publicationIds = [],
     publications = [],
     uriEncodedDOIs = {},
-    pageDOIs = (document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
+    pageDOIs = (document.body.innerText.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
       const decodedDOI = decodeURIComponent(doi);
       if (doi !== decodedDOI) {
         uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;

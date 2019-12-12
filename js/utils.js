@@ -9,4 +9,6 @@ function uniqueByProperty(array, property) {
 }
 
 // Check if given url is valid
-const isValidUrl = url => /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/.test(url);
+function isValidUrl(url) {
+  return /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/.test(url);
+}
