@@ -49,11 +49,12 @@ Element.prototype.parents = function (selector) {
 };
 (function (Browser) {
   'use strict';
-  const innerTextHosts = [
+  const innerHTMLHosts = [
     'www.embopress.org',
-    'www.pnas.org'
+    'www.pnas.org',
+    'www.sciencedirect.com'
   ];
-  var
+  let
     url = "https://pubpeer.com",
     address = `${url}/v3/publications?devkey=PubMed${Browser.name}`,
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
@@ -62,7 +63,7 @@ Element.prototype.parents = function (selector) {
     publicationIds = [],
     publications = [],
     uriEncodedDOIs = {},
-    pageDOIs = (document.body[getTargetAttr()].match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
+    pageDOIs = (document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
       const decodedDOI = decodeURIComponent(doi);
       if (doi !== decodedDOI) {
         uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;
@@ -70,6 +71,7 @@ Element.prototype.parents = function (selector) {
       return decodedDOI;
     }),
     pagePMIDs = (document.body.innerText.replace(/\n/g, '').match(/(PMID:?\s\d+)/gi) || []).map(id => id.match(/\d+/)[0]),
+    pagePmidOrDoiCount = 0,
     isPubMed = location.href.toLowerCase().indexOf('pubmed') > -1 && pagePMIDs.length || !pageDOIs.length;
 
   function init() {
@@ -83,15 +85,15 @@ Element.prototype.parents = function (selector) {
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     return [].filter.call(elements, function (element) {
-      if (typeof element.innerText === 'string') {
-        return element.innerText.toLowerCase().includes(text.toLowerCase());
+      if (typeof element[getTargetAttr()] === 'string') {
+        return element[getTargetAttr()].toLowerCase().includes(text.toLowerCase());
       }
       return false;
     });
   }
 
   function getTargetAttr() {
-    return innerTextHosts.includes(location.host) ? 'innerText' : 'innerHTML';
+    return innerHTMLHosts.includes(location.host) ? 'innerHTML' : 'innerText';
   }
 
   function informExtensionInstalled() {
@@ -129,8 +131,10 @@ Element.prototype.parents = function (selector) {
 
     if (isPubMed) {
       param.pmids = unique(pagePMIDs);
+      pagePmidOrDoiCount = param.pmids.length;
     } else {
       param.dois = unique(pageDOIs);
+      pagePmidOrDoiCount = param.dois.length;
     }
 
     request.send(JSON.stringify(param));
@@ -211,7 +215,7 @@ Element.prototype.parents = function (selector) {
   function generateNotificationTitle (publication, isTopBar = false) {
     let title = '';
     const type = getPublicationType(publication);
-    const titlePrefix = isTopBar ? 'An article on this page' : 'This article';
+    const titlePrefix = isTopBar && feedbacks.length === 1 && pagePmidOrDoiCount > 1 ? 'An article on this page' : 'This article';
     if (type === 'BLOGGED') {
       title = 'Additional information on PubPeer';
     } else if (type === 'RETRACTED') {
