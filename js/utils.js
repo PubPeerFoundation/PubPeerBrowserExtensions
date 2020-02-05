@@ -12,3 +12,23 @@ function uniqueByProperty(array, property) {
 function isValidUrl(url) {
   return /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/.test(url);
 }
+
+// Extract hostname from the url
+function extractHostNameFromUrl(url) {
+	let hostname;
+
+	//find & remove protocol (http, ftp, etc.) and get hostname
+	if (url.indexOf("//") > -1) {
+		hostname = url.split('/')[2];
+	}
+	else {
+		hostname = url.split('/')[0];
+	}
+
+	//find & remove port number
+	hostname = hostname.split(':')[0];
+	//find & remove "?"
+	hostname = hostname.split('?')[0];
+
+	return hostname;
+}

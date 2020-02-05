@@ -52,6 +52,7 @@ const runDisplayScript = (host, tabId) => {
     if (!webStoreHosts.includes(host) && !disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
       browser.tabs.executeScript(tabId, { file: 'js/utils.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/domains.js' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js' });
     }
   });

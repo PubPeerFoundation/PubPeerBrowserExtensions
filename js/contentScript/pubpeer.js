@@ -30,6 +30,7 @@ var Browser = (function () {
     }
   }).filter(Boolean).shift();
 })();
+
 Element.prototype.parents = function (selector) {
   'use strict';
   var parents = [],
@@ -47,6 +48,7 @@ Element.prototype.parents = function (selector) {
 
   return parents;
 };
+
 (function (Browser) {
   'use strict';
   const innerHTMLHosts = [
@@ -59,10 +61,13 @@ Element.prototype.parents = function (selector) {
     address = `${url}/v3/publications?devkey=PubMed${Browser.name}`,
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
     feedbacks = [],
+    urlFeedbacks = [],
     type = '',
     publicationIds = [],
     publications = [],
+    pageUrls = extractValidUrls(),
     uriEncodedDOIs = {},
+    processingUrl = false,
     pageDOIs = (document.body.innerHTML.match(/\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/gi) || []).map(doi => {
       const decodedDOI = decodeURIComponent(doi);
       if (doi !== decodedDOI) {
@@ -82,18 +87,24 @@ Element.prototype.parents = function (selector) {
     }
   }
 
+  function extractValidUrls() {
+    let urls = document.body.innerHTML.match(/\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|]/g);
+    return unique(urls.filter(url => allowedDomains.includes(extractHostNameFromUrl(url))));
+  }
+
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
+    var lowerCaseText = text.toLowerCase();
     return [].filter.call(elements, function (element) {
       if (typeof element[getTargetAttr()] === 'string') {
-        return element[getTargetAttr()].toLowerCase().includes(text.toLowerCase());
+        return element[getTargetAttr()].toLowerCase().includes(lowerCaseText);
       }
       return false;
     });
   }
 
   function getTargetAttr() {
-    return innerHTMLHosts.includes(location.host) ? 'innerHTML' : 'innerText';
+    return innerHTMLHosts.includes(location.host) || processingUrl ? 'innerHTML' : 'innerText';
   }
 
   function informExtensionInstalled() {
@@ -101,7 +112,7 @@ Element.prototype.parents = function (selector) {
   }
 
   function pageNeedsPubPeerLinks() {
-    return (unique(pageDOIs).length > 0 || unique(pagePMIDs).length > 0) && window.location.hostname.indexOf('pubpeer') === -1;
+    return (unique(pageDOIs).length > 0 || unique(pagePMIDs).length > 0 || unique(pageUrls).length > 0) && window.location.hostname.indexOf('pubpeer') === -1;
   }
 
   function addPubPeerLinks() {
@@ -115,9 +126,15 @@ Element.prototype.parents = function (selector) {
         if (!responseText) {
           return;
         }
-        feedbacks = uniqueByProperty(responseText.feedbacks, 'id'); // Make sure the feedbacks are unique by id
+        feedbacks = responseText.feedbacks && uniqueByProperty(responseText.feedbacks, 'id') || []; // Make sure the feedbacks are unique by id
+        urlFeedbacks = responseText.urlFeedbacks || [];
         determinePageType();
         feedbacks.forEach(function (publication) {
+          processingUrl = false;
+          appendPublicationDetails(publication);
+        });
+        urlFeedbacks.forEach(function (publication) {
+          processingUrl = true;
           appendPublicationDetails(publication);
         });
         addTopBar();
@@ -126,7 +143,8 @@ Element.prototype.parents = function (selector) {
 
     let param = {
       version: '1.3.2',
-      browser: Browser.name
+      browser: Browser.name,
+      urls: pageUrls
     }
 
     if (isPubMed) {
