@@ -89,7 +89,10 @@ Element.prototype.parents = function (selector) {
 
   function extractValidUrls() {
     let urls = document.body.innerHTML.match(/\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|]/g);
-    return unique(urls.filter(url => allowedDomains.includes(extractHostNameFromUrl(url))));
+    return unique(urls.filter(url => {
+      const possibleHostNames = extractHostNameFromUrl(url);
+      return allowedDomains.includes(possibleHostNames[0]) || allowedDomains.includes(possibleHostNames[1]);
+    }));
   }
 
   function contains(selector, text) {
@@ -112,7 +115,11 @@ Element.prototype.parents = function (selector) {
   }
 
   function pageNeedsPubPeerLinks() {
-    return (unique(pageDOIs).length > 0 || unique(pagePMIDs).length > 0 || unique(pageUrls).length > 0) && window.location.hostname.indexOf('pubpeer') === -1;
+    return (
+      unique(pageDOIs).length > 0 ||
+      unique(pagePMIDs).length > 0 ||
+      unique(pageUrls).length > 0
+    ) && window.location.hostname.indexOf('pubpeer') === -1;
   }
 
   function addPubPeerLinks() {
