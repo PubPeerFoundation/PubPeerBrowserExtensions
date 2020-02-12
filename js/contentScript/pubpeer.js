@@ -98,6 +98,9 @@ Element.prototype.parents = function (selector) {
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     var lowerCaseText = text.toLowerCase();
+    if (processingUrl) {
+      lowerCaseText = lowerCaseText.split('?')[0];
+    }
     return [].filter.call(elements, function (element) {
       if (typeof element[getTargetAttr()] === 'string') {
         return element[getTargetAttr()].toLowerCase().includes(lowerCaseText);
@@ -149,7 +152,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.3.2',
+      version: '1.4.0',
       browser: Browser.name,
       urls: pageUrls
     }
