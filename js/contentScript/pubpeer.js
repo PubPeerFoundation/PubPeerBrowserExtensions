@@ -57,7 +57,6 @@ Element.prototype.parents = function (selector) {
     'www.sciencedirect.com'
   ];
   let
-    // url = "https://localpubpeer.test",
     url = "https://pubpeer.com",
     address = `${url}/v3/publications?devkey=PubMed${Browser.name}`,
     utm = `?utm_source=${Browser.name}&utm_medium=BrowserExtension&utm_campaign=${Browser.name}`,
