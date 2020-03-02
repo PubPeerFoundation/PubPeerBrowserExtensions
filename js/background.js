@@ -50,10 +50,10 @@ const runDisplayScript = (host, tabId) => {
   browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
     disabledHosts = disabledHosts || [];
     if (!webStoreHosts.includes(host) && !disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
-      browser.tabs.executeScript(tabId, { file: 'js/utils.js' });
-      browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js' });
-      browser.tabs.executeScript(tabId, { file: 'js/contentScript/domains.js' });
-      browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js' });
+      browser.tabs.executeScript(tabId, { file: 'js/utils.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/domains.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js', runAt: 'document_idle' });
     }
   });
 }

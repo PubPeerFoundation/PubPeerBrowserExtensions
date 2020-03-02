@@ -65,6 +65,7 @@ Element.prototype.parents = function (selector) {
     type = '',
     publicationIds = [],
     publications = [],
+    uriEncodedUrls = {},
     pageUrls = extractValidUrls(),
     uriEncodedDOIs = {},
     processingUrl = false,
@@ -88,18 +89,29 @@ Element.prototype.parents = function (selector) {
   }
 
   function extractValidUrls() {
-    let urls = document.body.innerHTML.match(/\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|]/g);
-    return unique(urls.filter(url => {
+    let urls = Array.prototype.map.call(document.querySelectorAll('a'), el => el.href);
+    urls = urls.filter(url => {
+      if (!isValidUrl(url)) {
+        return false;
+      }
       const possibleHostNames = extractHostNameFromUrl(url);
       return allowedDomains.includes(possibleHostNames[0]) || allowedDomains.includes(possibleHostNames[1]);
-    }));
+    });
+    urls = urls.map(url => {
+      const decodedUrl = decodeURIComponent(url);
+      if (url !== decodedUrl) {
+        uriEncodedUrls[decodedUrl.toLowerCase()] = url;
+      }
+      return decodedUrl;
+    })
+    return unique(urls);
   }
 
   function contains(selector, text) {
     var elements = document.querySelectorAll(selector);
     var lowerCaseText = text.toLowerCase();
     if (processingUrl) {
-      lowerCaseText = lowerCaseText.split('?')[0];
+      lowerCaseText = 'href="' + lowerCaseText;
     }
     return [].filter.call(elements, function (element) {
       if (typeof element[getTargetAttr()] === 'string') {
@@ -111,6 +123,10 @@ Element.prototype.parents = function (selector) {
 
   function getTargetAttr() {
     return innerHTMLHosts.includes(location.host) || processingUrl ? 'innerHTML' : 'innerText';
+  }
+
+  function uriEncodedIds() {
+    return processingUrl ? uriEncodedUrls : uriEncodedDOIs;
   }
 
   function informExtensionInstalled() {
@@ -152,7 +168,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.4.1',
+      version: '1.4.2',
       browser: Browser.name,
       urls: pageUrls
     }
@@ -348,8 +364,8 @@ Element.prototype.parents = function (selector) {
     }
     let linkToComments = publication.url + utm;
     let unsortedDoiElements = contains(snippetsSelector, publication.id);
-    if (!unsortedDoiElements.length && !isPubMed && Object.keys(uriEncodedDOIs).includes(publication.id.toLowerCase())) {
-      unsortedDoiElements = contains(snippetsSelector, uriEncodedDOIs[publication.id.toLowerCase()]);
+    if (!unsortedDoiElements.length && !isPubMed && Object.keys(uriEncodedIds()).includes(publication.id.toLowerCase())) {
+      unsortedDoiElements = contains(snippetsSelector, uriEncodedIds()[publication.id.toLowerCase()]);
     }
     let aDoiElement = [];
     if (unsortedDoiElements.length > 0) {
