@@ -1,6 +1,6 @@
 let host = '', tabId = null;
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
   setHost();
   initClickEvents();
   initMessagingEvents();

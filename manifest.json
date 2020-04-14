@@ -6,8 +6,8 @@
   "author": "Pubpeer Foundation",
   "browser_action": {
     "default_icon": {
-      "20" : "img/pubpeer-16x16.png",
-      "40" : "img/pubpeer-48x48.png"
+      "20": "img/pubpeer-16x16.png",
+      "40": "img/pubpeer-48x48.png"
     },
     "default_title": "PubPeer",
     "default_popup": "index.html"

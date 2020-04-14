@@ -15,28 +15,28 @@ function isValidUrl(url) {
 
 // Extract hostname from the url
 function extractHostNameFromUrl(url) {
-	let hostname;
-	const www = 'www.';
+  let hostname;
+  const www = 'www.';
 
-	//find & remove protocol (http, ftp, etc.) and get hostname
-	if (url.indexOf("//") > -1) {
-		hostname = url.split('/')[2];
-	} else {
-		hostname = url.split('/')[0];
-	}
-	//find & remove port number
-	hostname = hostname.split(':')[0];
-	//find & remove "?"
-	hostname = hostname.split('?')[0];
-	hostname = hostname.toLowerCase();
-	let possibleHostNames = [hostname], anotherHostName;
-	if (hostname.indexOf(www) === -1) {
-		anotherHostName = www + hostname;
-	} else {
-		anotherHostName = hostname.split(www)[1];
-	}
+  //find & remove protocol (http, ftp, etc.) and get hostname
+  if (url.indexOf("//") > -1) {
+    hostname = url.split('/')[2];
+  } else {
+    hostname = url.split('/')[0];
+  }
+  //find & remove port number
+  hostname = hostname.split(':')[0];
+  //find & remove "?"
+  hostname = hostname.split('?')[0];
+  hostname = hostname.toLowerCase();
+  let possibleHostNames = [hostname], anotherHostName;
+  if (hostname.indexOf(www) === -1) {
+    anotherHostName = www + hostname;
+  } else {
+    anotherHostName = hostname.split(www)[1];
+  }
 
-	possibleHostNames.push(anotherHostName);
+  possibleHostNames.push(anotherHostName);
 
-	return possibleHostNames;
+  return possibleHostNames;
 }
