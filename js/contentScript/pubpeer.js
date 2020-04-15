@@ -94,8 +94,7 @@ Element.prototype.parents = function (selector) {
       if (!isValidUrl(url)) {
         return false;
       }
-      const possibleHostNames = extractHostNameFromUrl(url);
-      return allowedDomains.includes(possibleHostNames[0]) || allowedDomains.includes(possibleHostNames[1]);
+      return Domains.validate(url);
     });
     urls = urls.map(url => {
       const decodedUrl = decodeURIComponent(url);
