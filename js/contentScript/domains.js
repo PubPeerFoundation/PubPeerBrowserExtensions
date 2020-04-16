@@ -484,17 +484,19 @@
     },
 
     extractDomainsFromUrl: function (url) {
-      const match = url.match(/(?<=(:\/\/))[a-z0-9\-]+(\.[a-z0-9\-]+)+(?=(\:)?\/)/gi);
+      const match = url.match(/(:\/\/)[a-z0-9\-]+(\.[a-z0-9\-]+)+(?=(\:)?\/)/gi);
       let domains = [];
-      if (match !== null && match.length > 0 && 'string' === typeof match[0] && match[0].length > 0) {
-        const domain = match[0].toLowerCase();
-        domains.push(domain);
-        const componentDelimiter = '.';
-        let domainComponents = domain.split(componentDelimiter);
-        if (domainComponents.length > 2) {
-          domainComponents.shift();
-          domains.push(domainComponents.join(componentDelimiter));
-        }
+      if (match !== null && match.length > 0 && 'string' === typeof match[0] && match[0].length > 3) {
+        try {
+          const domain = match[0].split('://')[1].toLowerCase();
+          domains.push(domain);
+          const componentDelimiter = '.';
+          let domainComponents = domain.split(componentDelimiter);
+          if (domainComponents.length > 2) {
+            domainComponents.shift();
+            domains.push(domainComponents.join(componentDelimiter));
+          }
+        } catch (e) {}
       }
       return domains;
     },
