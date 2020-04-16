@@ -167,7 +167,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.4.2',
+      version: '1.5.0',
       browser: Browser.name,
       urls: pageUrls
     }
