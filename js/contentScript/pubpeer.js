@@ -94,8 +94,7 @@ Element.prototype.parents = function (selector) {
       if (!isValidUrl(url)) {
         return false;
       }
-      const possibleHostNames = extractHostNameFromUrl(url);
-      return allowedDomains.includes(possibleHostNames[0]) || allowedDomains.includes(possibleHostNames[1]);
+      return Domains.validate(url);
     });
     urls = urls.map(url => {
       const decodedUrl = decodeURIComponent(url);
@@ -168,7 +167,7 @@ Element.prototype.parents = function (selector) {
     };
 
     let param = {
-      version: '1.4.2',
+      version: '1.5.1',
       browser: Browser.name,
       urls: pageUrls
     }
@@ -184,16 +183,16 @@ Element.prototype.parents = function (selector) {
     request.send(JSON.stringify(param));
   }
 
-  function isDOMElement (obj) {
+  function isDOMElement(obj) {
     return !!(obj && obj.nodeType === 1);
   }
 
-  function isVisible (el) {
+  function isVisible(el) {
     const style = window.getComputedStyle(el);
     return !(el.offsetParent === null || style.display === 'none')
   }
 
-  function onAfterAddingTopBar () {
+  function onAfterAddingTopBar() {
     const articleElement = document.querySelector('p.pp_articles');
     switch (location.hostname) {
       case 'www.cell.com':
@@ -212,7 +211,7 @@ Element.prototype.parents = function (selector) {
     }
   }
 
-  function onAfterRemovingTopBar () {
+  function onAfterRemovingTopBar() {
     switch (location.hostname) {
       case 'www.cell.com':
         const headerElement = document.querySelector('header.header.base.fixed');
@@ -228,7 +227,7 @@ Element.prototype.parents = function (selector) {
     }
   }
 
-  function getPublicationType (publication) {
+  function getPublicationType(publication) {
     let publicationType = '';
     if (publication.updates && publication.updates.length) {
       switch (publication.updates[0].type) {
@@ -248,7 +247,7 @@ Element.prototype.parents = function (selector) {
     return publicationType;
   }
 
-  function determinePageType () {
+  function determinePageType() {
     if (feedbacks.length === 1) {
       type = getPublicationType(feedbacks[0]);
     } else {
@@ -256,7 +255,7 @@ Element.prototype.parents = function (selector) {
     }
   }
 
-  function generateNotificationTitle (publication, isTopBar = false) {
+  function generateNotificationTitle(publication, isTopBar = false) {
     let title = '';
     const type = getPublicationType(publication);
     const titlePrefix = isTopBar && feedbacks.length === 1 && pagePmidOrDoiCount > 1 ? 'An article on this page' : 'This article';
@@ -282,11 +281,11 @@ Element.prototype.parents = function (selector) {
     return title;
   }
 
-  function getBackgroundColor (type) {
+  function getBackgroundColor(type) {
     return type === 'RETRACTED' || type === 'EXPRESSION OF CONCERN' ? '#EF5753' : '#7ACCC8';
   }
 
-  function addTopBar () {
+  function addTopBar() {
     const bgColor = getBackgroundColor(type);
     const articleCount = publications.length;
     const topbarClassName = 'pp_articles';
