@@ -54,8 +54,11 @@ const runDisplayScript = (host, tabId) => {
       browser.tabs.executeScript(tabId, { file: 'js/utils.js', runAt: 'document_idle' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/sanitizer.js', runAt: 'document_idle' });
       browser.tabs.executeScript(tabId, { file: 'js/contentScript/domains.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/browser.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/element.js', runAt: 'document_idle' });
+      browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js', runAt: 'document_idle' });
       setTimeout(() => {
-        browser.tabs.executeScript(tabId, { file: 'js/contentScript/pubpeer.js', runAt: 'document_idle' });
+        browser.tabs.executeScript(tabId, { file: 'js/contentScript/content.js', runAt: 'document_idle' });
       }, 300);
     }
   });
