@@ -18,6 +18,7 @@ class PubPeer {
     this.uriEncodedDOIs = {};
     this.processingUrl = false;
     this.pagePmidOrDoiCount = 0;
+    this.validPublicationCount = 0;
   }
 
   init() {
@@ -169,6 +170,18 @@ class PubPeer {
     return !(el.offsetParent === null || style.display === "none");
   }
 
+  isBiorxivOnlyComment(publication) {
+    if (
+      publication.total_comments === 0 &&
+      publication.updates[0].content &&
+      publication.updates[0].content.type &&
+      publication.updates[0].content.type === "biorxiv_comment"
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   onAfterAddingTopBar() {
     const articleElement = document.querySelector("p.pp_articles");
     switch (location.hostname) {
@@ -190,6 +203,19 @@ class PubPeer {
         break;
       default:
         break;
+    }
+    this.initTopBarRemoveEvent();
+  }
+
+  initTopBarRemoveEvent() {
+    const closeElement = document.getElementById(
+      "btn-close-pubpeer-article-summary"
+    );
+    if (closeElement) {
+      closeElement.onclick = function () {
+        this.parentNode.remove();
+        this.onAfterRemovingTopBar();
+      };
     }
   }
 
@@ -224,8 +250,12 @@ class PubPeer {
           publicationType = "";
           break;
       }
-      if (publicationType === "BLOGGED" && publication.total_comments > 0) {
-        this.type = "";
+      if (
+        publicationType === "BLOGGED" &&
+        (publication.total_comments > 0 ||
+          this.isBiorxivOnlyComment(publication))
+      ) {
+        this.type = publicationType = "";
       }
     }
     return publicationType;
@@ -276,7 +306,7 @@ class PubPeer {
 
   addTopBar() {
     const bgColor = this.getBackgroundColor(this.type);
-    const articleCount = this.publications.length;
+    const articleCount = this.validPublicationCount;
     const topbarClassName = "pp_articles";
     if (
       (articleCount > 0 || this.type !== "") &&
@@ -328,19 +358,13 @@ class PubPeer {
       `;
       document.body.prepend(pElement);
       this.onAfterAddingTopBar();
-      const closeElement = document.getElementById(
-        "btn-close-pubpeer-article-summary"
-      );
-      if (closeElement) {
-        closeElement.onclick = function () {
-          this.parentNode.remove();
-          this.onAfterRemovingTopBar();
-        };
-      }
     }
   }
 
   appendPublicationDetails(publication) {
+    if (this.isBiorxivOnlyComment(publication)) {
+      return;
+    }
     var googleSnippetDiv = "div.s",
       bingSnippetDiv = "div.b_caption",
       duckDuckGoSnippetDiv = "div.result__body",
@@ -412,5 +436,6 @@ class PubPeer {
         }
       }
     }
+    this.validPublicationCount++;
   }
 }
