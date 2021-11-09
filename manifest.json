@@ -19,8 +19,7 @@
   "permissions": [
     "http://*/*",
     "https://*/*",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "icons": {
     "16": "img/pubpeer-16x16.png",
