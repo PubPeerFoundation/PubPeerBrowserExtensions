@@ -13,6 +13,7 @@ class PubPeer {
     this.type = "";
     this.publicationIds = [];
     this.publications = [];
+    this.pubpeerUrls = [];
     this.uriEncodedUrls = {};
     this.pageUrls = this.extractValidUrls();
     this.uriEncodedDOIs = {};
@@ -145,7 +146,7 @@ class PubPeer {
     };
 
     let param = {
-      version: "1.6.0",
+      version: "1.6.2",
       browser: Browser.name,
       urls: this.pageUrls,
     };
@@ -205,6 +206,20 @@ class PubPeer {
         break;
     }
     this.initTopBarRemoveEvent();
+    this.initHeaderSubContentToggleEvent();
+  }
+
+  initHeaderSubContentToggleEvent() {
+    const toggleElement = document.getElementById("pubpeer-toggle-subcontent");
+    if (toggleElement) {
+      toggleElement.onclick = function () {
+        const subContent = document.getElementById("pubpeer-header-subcontent");
+        if (subContent) {
+          subContent.style.display =
+            subContent.style.display === "none" ? "block" : "none";
+        }
+      };
+    }
   }
 
   initTopBarRemoveEvent() {
@@ -212,9 +227,10 @@ class PubPeer {
       "btn-close-pubpeer-article-summary"
     );
     if (closeElement) {
+      const that = this;
       closeElement.onclick = function () {
-        this.parentNode.remove();
-        this.onAfterRemovingTopBar();
+        this.parentNode.parentNode.remove();
+        that.onAfterRemovingTopBar();
       };
     }
   }
@@ -352,9 +368,38 @@ class PubPeer {
             `;
       }
       pElement.innerHTML = `
-        <img src="${this.url}/img/logo.svg" style="display:inline;vertical-align:middle;padding-right:8px;height:25px;background-color:${bgColor};"></img>
-          ${hrefText}
-        <div id="btn-close-pubpeer-article-summary" style="float:right;font-size:20px;line-height:24px;padding-right:10px;cursor: pointer;user-select:none;color:white;">×</div>
+        <div ${
+          this.publications.length > 1
+            ? 'id="pubpeer-toggle-subcontent" style="cursor: pointer"'
+            : ""
+        }>
+          <img src="${
+            this.url
+          }/img/logo.svg" style="display:inline;vertical-align:middle;padding-right:8px;height:25px;background-color:${bgColor};"></img>
+            ${hrefText}
+          <div id="btn-close-pubpeer-article-summary" style="float:right;font-size:20px;line-height:24px;padding-right:10px;cursor: pointer;user-select:none;color:white;">×</div>
+        </div>
+        ${
+          this.publications.length > 1
+            ? `<div id="pubpeer-header-subcontent" style="display: none;">${this.publications.reduce(
+                (html, publication) => {
+                  html += `
+                  <div>
+                    ${Sanitizer.escapeHTML`
+                    <a href="${
+                      publication.url + this.utm
+                    }" target="_blank" rel="noopener noreferrer" style="color:rgb(255,255,255);text-decoration:none;font-weight:500;vertical-align:middle;border: none;">
+                      ${publication.title}
+                    </a>
+                  `}
+                  </div>
+                `;
+                  return html;
+                },
+                ""
+              )}</div>`
+            : ""
+        }
       `;
       document.body.prepend(pElement);
       this.onAfterAddingTopBar();
@@ -431,11 +476,14 @@ class PubPeer {
         if (publication.title) {
           if (!this.publicationIds.includes(publication.id)) {
             this.publicationIds.push(publication.id);
-            this.publications.push(publication);
           }
         }
       }
     }
-    this.validPublicationCount++;
+    if (!this.pubpeerUrls.includes(publication.url)) {
+      this.publications.push(publication);
+      this.pubpeerUrls.push(publication.url);
+      this.validPublicationCount++;
+    }
   }
 }
