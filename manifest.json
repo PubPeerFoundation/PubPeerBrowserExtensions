@@ -1,29 +1,41 @@
 {
   "name": "PubPeer",
   "description": "Show links to existing PubPeer comments",
-  "version": "1.6.2",
-  "manifest_version": 2,
+  "version": "1.7",
+  "manifest_version": 3,
   "author": "Pubpeer Foundation",
-  "browser_action": {
-    "default_icon": {
-      "20": "img/pubpeer-16x16.png",
-      "40": "img/pubpeer-48x48.png"
-    },
-    "default_title": "PubPeer",
-    "default_popup": "index.html"
-  },
   "background": {
-    "page": "background.html",
-    "persistent": true
+    "service_worker": "service-worker.js"
   },
   "permissions": [
-    "http://*/*",
-    "https://*/*",
-    "storage"
+    "webNavigation",
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+        "matches": ["<all_urls>"],
+        "js": ["js/contentScript/checkClass.js"]
+    }
   ],
   "icons": {
     "16": "img/pubpeer-16x16.png",
     "48": "img/pubpeer-48x48.png",
     "128": "img/pubpeer-128x128.png"
-  }
+  },
+  "action": {
+    "default_icon": {
+      "20": "img/pubpeer-16x16.png",
+      "40": "img/pubpeer-48x48.png"
+    },
+    "default_title": "PubPeer",
+    "default_popup": "popup.html"
+  },
+  "content_security_policy": {},
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ]
 }

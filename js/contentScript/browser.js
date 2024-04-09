@@ -30,3 +30,4 @@ var Browser = (function () {
     }
   }).filter(Boolean).shift();
 })();
+

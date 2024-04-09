@@ -40,3 +40,7 @@ function extractHostNameFromUrl(url) {
 
   return possibleHostNames;
 }
+
+// for debug 
+// console.log('utils loaded');
+// chrome.runtime.sendMessage({ name: 'utils loaded'});
