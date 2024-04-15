@@ -15,3 +15,5 @@ Element.prototype.parents = function (selector) {
 
   return parents;
 };
+// unknown bug in firefox : need this line to work.
+console.log("");

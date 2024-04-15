@@ -3,6 +3,9 @@
 //   console.log("Message received:", message);
 // });
 
+// Browser Polyfill
+globalThis.browser ??= chrome;
+
 // Utility functions
 
 // Function to make an array unique
@@ -31,28 +34,28 @@ function unique(array) {
  // Listener for messages from the background script or content scripts
  const listener = async (msg, sender) => {
   const { name, host, tabId } = msg;
-  chrome.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
+  browser.storage.local.get(STORAGE_KEY, ({ [STORAGE_KEY]: disabledHosts }) => {
      disabledHosts = disabledHosts || [];
      if (name === 'disableOnce') {
        // Temporarily disable the host for the current session
        tempDisabledHosts = addItem(host, tempDisabledHosts);
        // Remove the host from the permanent list
-       chrome.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
-         chrome.runtime.sendMessage({ name: 'close_window' });
+       browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
+         browser.runtime.sendMessage({ name: 'close_window' });
          runRemoveScript(tabId);
        });
      } else if (name === 'disableForever') {
        // Permanently disable the host
-       chrome.storage.local.set({ [STORAGE_KEY]: addItem(host, disabledHosts) }, () => {
+       browser.storage.local.set({ [STORAGE_KEY]: addItem(host, disabledHosts) }, () => {
          tempDisabledHosts = removeItem(host, tempDisabledHosts);
-         chrome.runtime.sendMessage({ name: 'close_window' });
+         browser.runtime.sendMessage({ name: 'close_window' });
          runRemoveScript(tabId);
        });
      } else if (name === 'enable') {
        // Enable the host
-       chrome.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
+       browser.storage.local.set({ [STORAGE_KEY]: removeItem(host, disabledHosts) }, () => {
          tempDisabledHosts = removeItem(host, tempDisabledHosts);
-         chrome.runtime.sendMessage({ name: 'close_window' });
+         browser.runtime.sendMessage({ name: 'close_window' });
          runDisplayScript(host, tabId);
        });
      }
@@ -79,7 +82,7 @@ function unique(array) {
 // Function to check if a class exists in a tab
 const PubpeerExists = async (tabId) => {
   return new Promise((resolve) => {
-     chrome.tabs.sendMessage(tabId, { action: 'checkClass' }, (response) => {
+     browser.tabs.sendMessage(tabId, { action: 'checkClass' }, (response) => {
        resolve(response);
      });
   });
@@ -88,7 +91,7 @@ const PubpeerExists = async (tabId) => {
 
  // Function to execute scripts for displaying content
  const runDisplayScript = async (host, tabId) => {
-  let { [STORAGE_KEY]: disabledHosts } = await chrome.storage.local.get(STORAGE_KEY);
+  let { [STORAGE_KEY]: disabledHosts } = await browser.storage.local.get(STORAGE_KEY);
   disabledHosts = disabledHosts || [];
   if (!forbiddenHosts.includes(host) && !disabledHosts.includes(host) && !tempDisabledHosts.includes(host)) {
     const scriptsToExecute = [
@@ -100,25 +103,26 @@ const PubpeerExists = async (tabId) => {
       { file: 'js/contentScript/pubpeer.js', target: { tabId: tabId } }
     ];
     // check if Pubpeer Class already exists in the page (avoid annoying error message)
-    // const exist = await PubpeerExists(tabId)
     if (await PubpeerExists(tabId)){
+      console.log('Pubpeer Already declared')
       // Execute the content script alone
-      chrome.scripting.executeScript({
+      browser.scripting.executeScript({
         target: { tabId: tabId },
         files: ['js/contentScript/content.js']
       });
     }
     else {
       // Execute all necessary scripts 
+      console.log('Pubpeer not declared yet')
       for (const script of scriptsToExecute) {
-        await chrome.scripting.executeScript({
+        await browser.scripting.executeScript({
           target: script.target,
           files: [script.file]
         });
       }
       // Then Execute the content script with a delay of 300 ms
       setTimeout(async () => {
-        await chrome.scripting.executeScript({
+        await browser.scripting.executeScript({
           target: { tabId: tabId },
           files: ['js/contentScript/content.js']
         });
@@ -129,7 +133,7 @@ const PubpeerExists = async (tabId) => {
  
  // Function to execute script for removing content
  const runRemoveScript = (tabId) => {
-  chrome.scripting.executeScript({
+  browser.scripting.executeScript({
      target: { tabId: tabId },
      files: ['js/contentScript/removePubPeerMarks.js']
   });
@@ -137,7 +141,7 @@ const PubpeerExists = async (tabId) => {
  
  // Initialize event listener for web navigation
  const initTabsEvent = () => {
-  chrome.webNavigation.onCompleted.addListener((details) => {
+  browser.webNavigation.onCompleted.addListener((details) => {
      const { tabId, url } = details;
      if (isValidUrl(url)) {
        const host = url.indexOf('//') > -1 ? url.split('//')[1].split('/')[0] : '';
@@ -148,7 +152,7 @@ const PubpeerExists = async (tabId) => {
  
  // Initialize the service worker
  const init = () => {
-  chrome.runtime.onMessage.addListener(listener);
+  browser.runtime.onMessage.addListener(listener);
   initTabsEvent();
  };
  

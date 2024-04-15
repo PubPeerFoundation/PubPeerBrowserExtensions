@@ -1,3 +1,5 @@
+// Browser Polyfill
+globalThis.browser ??= chrome;
 
 let host = '', tabId = null;
 
@@ -15,12 +17,12 @@ const initClickEvents = () => {
 
  // Listen for messages from the background script or other parts of the extension
 const initMessagingEvents = () => {
- chrome.runtime.onMessage.addListener(onMessage);
+ browser.runtime.onMessage.addListener(onMessage);
 };
 
 // Function to set the host variable based on the current active tab's URL
 const setHost = () => {
- chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+ browser.tabs.query({ active: true, currentWindow: true }, tabs => {
     const { url, id } = tabs[0];
     tabId = id;
     if (typeof url === 'string') {
@@ -34,11 +36,11 @@ const setHost = () => {
 const eventListener = (e) => {
  const { id } = e.target;
  if (id === 'btn_disable_once') {
-    chrome.runtime.sendMessage({ name: 'disableOnce', host, tabId });
+    browser.runtime.sendMessage({ name: 'disableOnce', host, tabId });
  } else if (id === 'btn_disable_forever') {
-    chrome.runtime.sendMessage({ name: 'disableForever', host, tabId });
+    browser.runtime.sendMessage({ name: 'disableForever', host, tabId });
  } else if (id === 'btn_enable') {
-    chrome.runtime.sendMessage({ name: 'enable', host, tabId })
+    browser.runtime.sendMessage({ name: 'enable', host, tabId })
  }
 };
 

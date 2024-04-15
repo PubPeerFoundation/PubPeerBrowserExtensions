@@ -5,6 +5,7 @@
   "manifest_version": 3,
   "author": "Pubpeer Foundation",
   "background": {
+    "scripts": ["service-worker.js"],
     "service_worker": "service-worker.js"
   },
   "permissions": [
@@ -20,6 +21,16 @@
         "js": ["js/contentScript/checkClass.js"]
     }
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "addon@pubpeer.com",
+      "strict_min_version": "121.0a1"
+    },
+    "gecko_android": {
+      "strict_min_version": "121.0a1"
+    }
+  },
+  "minimum_chrome_version": "121",
   "icons": {
     "16": "img/pubpeer-16x16.png",
     "48": "img/pubpeer-48x48.png",
