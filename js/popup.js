@@ -35,10 +35,10 @@ const setHost = () => {
 // Event listener for click events on the popup
 const eventListener = (e) => {
  const { id } = e.target;
- if (id === 'btn_disable_once') {
-    browser.runtime.sendMessage({ name: 'disableOnce', host, tabId });
- } else if (id === 'btn_disable_forever') {
-    browser.runtime.sendMessage({ name: 'disableForever', host, tabId });
+ if (id === 'btn_hide') {
+    browser.runtime.sendMessage({ name: 'hide', host, tabId });
+ } else if (id === 'btn_disable') {
+    browser.runtime.sendMessage({ name: 'disable', host, tabId });
  } else if (id === 'btn_enable') {
     browser.runtime.sendMessage({ name: 'enable', host, tabId })
  }

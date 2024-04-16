@@ -5,21 +5,13 @@
   "manifest_version": 3,
   "author": "Pubpeer Foundation",
   "background": {
-    "scripts": ["service-worker.js"],
-    "service_worker": "service-worker.js"
+    "scripts": ["background.js"],
+    "service_worker": "background.js"
   },
   "permissions": [
     "webNavigation",
-    "storage",
-    "activeTab",
     "scripting",
-    "tabs"
-  ],
-  "content_scripts": [
-    {
-        "matches": ["<all_urls>"],
-        "js": ["js/contentScript/checkClass.js"]
-    }
+    "storage"
   ],
   "browser_specific_settings": {
     "gecko": {
@@ -47,6 +39,5 @@
   "content_security_policy": {},
   "host_permissions": [
     "http://*/*",
-    "https://*/*"
-  ]
+    "https://*/*"]
 }
