@@ -11,7 +11,8 @@
   "permissions": [
     "webNavigation",
     "scripting",
-    "storage"
+    "storage",
+    "activeTab"
   ],
   "browser_specific_settings": {
     "gecko": {
@@ -39,5 +40,6 @@
   "content_security_policy": {},
   "host_permissions": [
     "http://*/*",
-    "https://*/*"]
+    "https://*/*"
+  ]
 }

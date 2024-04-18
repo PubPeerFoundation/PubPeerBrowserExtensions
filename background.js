@@ -92,6 +92,14 @@ const listener = async (msg) => {
     browser.runtime.sendMessage({ name: 'close_window' });
     runDisplayScript(host, tabId);
   }
+  else if (name === 'is_enable') {
+    let alreadyenabled = await isHostInEnabledArray(host)
+    if (alreadyenabled){
+      browser.runtime.sendMessage({ name: 'host_enable' });
+    } else {
+      browser.runtime.sendMessage({ name: 'host_disable' });
+    }
+  }
 }
 
 // Function to execute scripts for displaying content
