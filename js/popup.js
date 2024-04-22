@@ -68,10 +68,10 @@ const onMessage = (msg) => {
       '<button id="btn_enable" class="btn btn-green">ENABLE</button>';
   } else if (name === "host_hidden") {
     document.getElementById("description").innerHTML =
-      "<p>This extension is HIDDEN<br>On this tab only";
+      "<p>This extension is HIDDEN<br>On this page only" +
+      '<p class="description">The host is ' + host + '</p>';
     document.getElementById("actions").innerHTML =
       '<button id="btn_show" class="btn btn-green">SHOW COMMENTS BACK</button>' +
-      '<button id="btn_disable" class="btn btn-green">DISABLE THE HOST</button>' +
-      '<p class="description"><br>The host is ' + host + '</p>';
+      '<button id="btn_disable" class="btn btn-green">DISABLE THE HOST</button>';
   }
 };
