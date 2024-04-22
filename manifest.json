@@ -8,12 +8,7 @@
     "scripts": ["background.js"],
     "service_worker": "background.js"
   },
-  "permissions": [
-    "webNavigation",
-    "scripting",
-    "storage",
-    "activeTab"
-  ],
+  "permissions": ["webNavigation", "scripting", "storage"],
   "browser_specific_settings": {
     "gecko": {
       "id": "addon@pubpeer.com",
@@ -38,8 +33,5 @@
     "default_popup": "popup.html"
   },
   "content_security_policy": {},
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ]
+  "host_permissions": ["http://*/*", "https://*/*"]
 }
