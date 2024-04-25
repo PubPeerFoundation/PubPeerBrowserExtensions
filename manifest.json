@@ -1,12 +1,12 @@
 {
   "name": "PubPeer",
   "description": "Show links to existing PubPeer comments",
-  "version": "1.7",
+  "version": "1.7.0",
   "manifest_version": 3,
   "author": "Pubpeer Foundation",
   "background": {
-    "scripts": ["background.js"],
-    "service_worker": "background.js"
+    "scripts": ["js/background.js"],
+    "service_worker": "js/background.js"
   },
   "permissions": ["webNavigation", "scripting", "storage"],
   "browser_specific_settings": {
