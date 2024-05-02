@@ -5,8 +5,14 @@
   "manifest_version": 3,
   "author": "Pubpeer Foundation",
   "background": {
-    "scripts": ["js/background.js"],
-    "service_worker": "js/background.js"
+    "scripts": [
+      "js/utils/utils.js",
+      "js/utils/contentScript.js",
+      "js/utils/disabledHosts.js",
+      "js/utils/states.js",
+      "js/background.js"
+    ],
+    "service_worker": "js/service-worker.js"
   },
   "permissions": ["webNavigation", "scripting", "storage"],
   "browser_specific_settings": {
