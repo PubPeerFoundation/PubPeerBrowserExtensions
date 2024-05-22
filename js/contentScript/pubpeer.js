@@ -320,6 +320,30 @@ class PubPeer {
       : "#7ACCC8";
   }
 
+  adujstBodyHeight() {
+    const ppBanner = document.querySelector('.pp_articles');
+    const bannerHeight = ppBanner.offsetHeight;
+    document.body.style.paddingTop = `${bannerHeight}px`;
+    const nonStaticElements = Array.from(document.querySelectorAll('*'))
+    .filter(el => window.getComputedStyle(el).position === 'sticky'||
+    window.getComputedStyle(el).position === 'fixed');
+    nonStaticElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (el !== ppBanner){
+        if (rect.top < ppBanner.clientHeight ) {
+          etAttribute('data-oriTop', el.style.top)
+          el.style.top += `${bannerHeight}px`;
+          el.setAttribute('data-moved','true')
+
+        }
+        else if (rect.top >= ppBanner.clientHeight && el.data-moved === `true`) {
+          el.style.Top = el.data-oriTop;
+
+        }
+      }
+    });
+  }
+
   addTopBar() {
     const bgColor = this.getBackgroundColor(this.type);
     const articleCount = this.validPublicationCount;
@@ -328,14 +352,16 @@ class PubPeer {
       (articleCount > 0 || this.type !== "") &&
       document.getElementsByClassName(topbarClassName).length === 0
     ) {
-      let pElement = document.createElement("p");
-      pElement.className = topbarClassName;
-      pElement.style = `
-        position: -webkit-sticky;
+      let banner = document.createElement("p");
+      banner.className = topbarClassName;
+      banner.style = `
+        position: fixed;
         top: 0;
-        position: sticky;
-        z-index: 9999;
+        left: 0;
+        width: 100%;
         margin: 0;
+        opacity: 100%;
+        z-index: 9999;
         background-color: ${bgColor};
         text-align: center !important;
         padding: 5px 8px;
@@ -367,7 +393,7 @@ class PubPeer {
               </span>
             `;
       }
-      pElement.innerHTML = `
+      banner.innerHTML = `
         <div ${
           this.publications.length > 1
             ? 'id="pubpeer-toggle-subcontent" style="cursor: pointer"'
@@ -401,8 +427,12 @@ class PubPeer {
             : ""
         }
       `;
-      document.body.prepend(pElement);
+      document.body.prepend(banner);
       this.onAfterAddingTopBar();
+      this.adujstBodyHeight();
+      window.addEventListener('resize', this.adujstBodyHeight);
+      window.addEventListener('click', this.adujstBodyHeight);
+      window.addEventListener('scroll', this.adujstBodyHeight);
     }
   }
 
