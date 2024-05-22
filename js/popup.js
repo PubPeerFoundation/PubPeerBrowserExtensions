@@ -1,46 +1,43 @@
-let host = '', tabId = null;
+let host = "",
+  tabId = null,
+  State = "";
 
+// Event listener for the DOMContentLoaded event, which fires when the initial HTML document has been completely loaded and parsed
 document.addEventListener("DOMContentLoaded", function (event) {
   setHost();
   initClickEvents();
-  initMessagingEvents();
 });
 
+// Function to set up click event listeners
 const initClickEvents = () => {
-  document.addEventListener('click', eventListener);
+  document.addEventListener("click", eventListener);
 };
 
-const initMessagingEvents = () => {
-  browser.runtime.onMessage.addListener(onMessage);
-}
-
+// Function to set the host variable based on the current active tab's URL
 const setHost = () => {
-  browser.tabs.query({ active: true, currentWindow: true }, tabs => {
+  browser.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const { url, id } = tabs[0];
     tabId = id;
-    if (typeof url === 'string') {
-      host = url.indexOf('//') > -1 ? url.split('//')[1].split('/')[0] : '';
-      document.getElementById('host').innerText = host;
+    if (typeof url === "string") {
+      host = url.indexOf("//") > -1 ? url.split("//")[1].split("/")[0] : "";
+      State = await getState(host, tabId);
+      stateDisplay[State]();
     }
-  })
-}
+  });
+};
 
+// Event listener for click events on the popup
 const eventListener = (e) => {
   const { id } = e.target;
-  if (id === 'btn_close') {
+  if (id.slice(0, 3) === "trg") {
+    browser.runtime.sendMessage({
+      object: "transition",
+      content: id.slice(4),
+      host,
+      tabId,
+    });
     window.close();
-  } else if (id === 'btn_disable_once') {
-    browser.runtime.sendMessage({ name: 'disableOnce', host, tabId });
-  } else if (id === 'btn_disable_forever') {
-    browser.runtime.sendMessage({ name: 'disableForever', host, tabId });
-  } else if (id === 'btn_enable') {
-    browser.runtime.sendMessage({ name: 'enable', host, tabId });
-  }
-}
-
-const onMessage = (msg) => {
-  const { name } = msg;
-  if (name === 'close_window') {
+  } else if (id === "close") {
     window.close();
   }
 };

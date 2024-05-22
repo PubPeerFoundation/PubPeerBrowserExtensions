@@ -30,3 +30,5 @@ var Browser = (function () {
     }
   }).filter(Boolean).shift();
 })();
+
+// console.log("Browser.py loaded");
