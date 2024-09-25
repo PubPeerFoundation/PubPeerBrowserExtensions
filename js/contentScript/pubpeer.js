@@ -73,7 +73,7 @@ class PubPeer {
     ).map((doi) => {
       const decodedDOI = decodeURIComponent(doi);
       if (doi !== decodedDOI) {
-        uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;
+        this.uriEncodedDOIs[decodedDOI.toLowerCase()] = doi;
       }
       return decodedDOI;
     });
@@ -320,28 +320,60 @@ class PubPeer {
       : "#7ACCC8";
   }
 
-  adujstBodyHeight() {
-    const ppBanner = document.querySelector('.pp_articles');
+  adujstTopBar() {
+    const ppBanner = document.querySelector(".pp_articles");
     const bannerHeight = ppBanner.offsetHeight;
-    document.body.style.paddingTop = `${bannerHeight}px`;
-    const nonStaticElements = Array.from(document.querySelectorAll('*'))
-    .filter(el => window.getComputedStyle(el).position === 'sticky'||
-    window.getComputedStyle(el).position === 'fixed');
-    nonStaticElements.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (el !== ppBanner){
-        if (rect.top < ppBanner.clientHeight ) {
-          etAttribute('data-oriTop', el.style.top)
-          el.style.top += `${bannerHeight}px`;
-          el.setAttribute('data-moved','true')
+    // make space for the banner at the top of the body.
+    document.body.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+    // Gather fixed element only
+    const fixedElements = Array.from(document.querySelectorAll("*")).filter(
+      (el) => window.getComputedStyle(el).position === "fixed"
+    );
+    // Gather absolute element only
+    const absElements = Array.from(document.querySelectorAll("*")).filter(
+      (el) => window.getComputedStyle(el).position === "absolute"
+    );
+    // Gather sticky element only
+    const stickyElements = Array.from(document.querySelectorAll("*")).filter(
+      (el) => window.getComputedStyle(el).position === "sticky"
+    );
 
-        }
-        else if (rect.top >= ppBanner.clientHeight && el.data-moved === `true`) {
-          el.style.Top = el.data-oriTop;
-
-        }
+    // Move down all fixed elements
+    fixedElements.forEach((el) => {
+      if (el !== ppBanner) {
+        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
       }
     });
+
+    // Move sticky elements only if they haven't cross there threshold.
+    stickyElements.forEach((el) => {
+      // get element position
+      const position = el.getBoundingClientRect().top;
+      const threshold = parseInt(window.getComputedStyle(el).top);
+      // // get padding-top of the element in px
+      // // in case padding top already used
+      // const p_top = parseInt(window.getComputedStyle(el).paddingTop);
+      // const p_all = el.style.padding;
+      // const p_top_banner = p_all + p_top + bannerHeight;
+      if (position < ppBanner.clientHeight) {
+        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+      } else if (position <= threshold) {
+        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+      } else {
+        el.style.setProperty('padding-top', `0px`, 'important');
+      }
+    });
+
+    // // Adjust absolute elements if at the top of the page.
+    // absElements.forEach((el) => {
+    //   const rect = el.getBoundingClientRect();
+    //   if (rect.top < 0) {
+    //     const newEl = document.createElement('div');
+    //     newEl.style.height = `${bannerHeight}px`;
+    //     el.parentNode.insertBefore(newEl, el);
+    //   }
+    // });
+
   }
 
   addTopBar() {
@@ -429,10 +461,10 @@ class PubPeer {
       `;
       document.body.prepend(banner);
       this.onAfterAddingTopBar();
-      this.adujstBodyHeight();
-      window.addEventListener('resize', this.adujstBodyHeight);
-      window.addEventListener('click', this.adujstBodyHeight);
-      window.addEventListener('scroll', this.adujstBodyHeight);
+      this.adujstTopBar();
+      window.addEventListener("resize", this.adujstTopBar);
+      window.addEventListener("click", this.adujstTopBar);
+      window.addEventListener("scroll", this.adujstTopBar);
     }
   }
 
