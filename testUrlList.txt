@@ -1,27 +1,36 @@
+(+): minor improvement with last update
+(++): majore improvement
+(-): minor downgrade
+(--): major downgrade
+
+
 Test list that sould be fine:
+## PUBMED
+https://pubemd.ncbi.nlm.nih.gov/38321082/
+
 ## NATURE
-https://www.nature.com/articles/s41586-020-2699-5
+https://www.nature.com/articles/s41586-020-2699-5 (+)
 
 ## SCIENCEDIRECT
-https://www.sciencedirect.com/science/article/pii/S0021925820324856?via%3Dihub
+https://www.sciencedirect.com/science/article/pii/S0021925820324856?via%3Dihub (+)
 
 ## BlueSKY
-https://bsky.app/profile/brendannyhan.bsky.social/post/3ksfjeu62os27
+https://bsky.app/profile/brendannyhan.bsky.social/post/3ksfjeu62os27 (++)
 
 ## OTHER
-https://www.nejm.org/doi/10.1056/NEJMoa2310168
-https://pubs.acs.org/doi/10.1021/acs.nanolett.4c01071
+https://www.nejm.org/doi/10.1056/NEJMoa2310168 (+)
+https://pubs.acs.org/doi/10.1021/acs.nanolett.4c01071 (+)
 
 
 Test list with minor problems :
 ## SCIENCE
-https://www.science.org/doi/10.1126/sciadv.adj6958 ## popup is not well organised and not well placed
+https://www.science.org/doi/10.1126/sciadv.adj6958 (+) ## popup is not well organised and not well placed
 
 ## PNAS
-https://www.pnas.org/doi/10.1073/pnas.2321584121 ## too much popups.
+https://www.pnas.org/doi/10.1073/pnas.2321584121 (+) ## too much popups.
 
 ## PLOS
-https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007028 ## fixed banner when scroll down is truncated.
+https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007028 (+) ## fixed banner when scroll down is truncated.
 
 ## OTHER
 https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2818559 ## add double banner space at the top of page.
@@ -38,6 +47,4 @@ https://jamesclaims.substack.com/p/the-hindawi-files-part-2-hindawi ## big pop u
 
 https://arxiv.org/abs/2405.12998v1 ## nothing from pubpeer showing up.
 
-
-### Probelems solved #####
-https://www.nature.com/articles/s41591-024-02963-2  # nothing show up and error in console. (solved)
+https://www.nature.com/articles/s41591-024-02963-2  # nothing show up and error in console. (paritally solved still one of the article with no popup)
