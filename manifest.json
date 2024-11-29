@@ -17,7 +17,7 @@
   "permissions": ["webNavigation", "scripting", "storage"],
   "browser_specific_settings": {
     "gecko": {
-      "id": "addon@pubpeer.com",
+      "id": "jid1-rU2mNakSg7IiSQ@jetpack",
       "strict_min_version": "121.0a1"
     },
     "gecko_android": {
