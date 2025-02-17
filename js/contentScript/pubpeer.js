@@ -146,7 +146,7 @@ class PubPeer {
     };
 
     let param = {
-      version: "1.6.2",
+      version: "1.7.1.1",
       browser: Browser.name,
       urls: this.pageUrls,
     };
@@ -324,15 +324,19 @@ class PubPeer {
     const ppBanner = document.querySelector(".pp_articles");
     const bannerHeight = ppBanner.offsetHeight;
     // make space for the banner at the top of the body.
-    document.body.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+    document.body.style.setProperty(
+      "padding-top",
+      `${bannerHeight}px`,
+      "important"
+    );
     // Gather fixed element only
     const fixedElements = Array.from(document.querySelectorAll("*")).filter(
       (el) => window.getComputedStyle(el).position === "fixed"
     );
     // Gather absolute element only
-    const absElements = Array.from(document.querySelectorAll("*")).filter(
-      (el) => window.getComputedStyle(el).position === "absolute"
-    );
+    // const absElements = Array.from(document.querySelectorAll("*")).filter(
+    //   (el) => window.getComputedStyle(el).position === "absolute"
+    // );
     // Gather sticky element only
     const stickyElements = Array.from(document.querySelectorAll("*")).filter(
       (el) => window.getComputedStyle(el).position === "sticky"
@@ -341,7 +345,7 @@ class PubPeer {
     // Move down all fixed elements
     fixedElements.forEach((el) => {
       if (el !== ppBanner) {
-        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+        el.style.setProperty("padding-top", `${bannerHeight}px`, "important");
       }
     });
 
@@ -356,11 +360,11 @@ class PubPeer {
       // const p_all = el.style.padding;
       // const p_top_banner = p_all + p_top + bannerHeight;
       if (position < ppBanner.clientHeight) {
-        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+        el.style.setProperty("padding-top", `${bannerHeight}px`, "important");
       } else if (position <= threshold) {
-        el.style.setProperty('padding-top', `${bannerHeight}px`, 'important');
+        el.style.setProperty("padding-top", `${bannerHeight}px`, "important");
       } else {
-        el.style.setProperty('padding-top', `0px`, 'important');
+        el.style.setProperty("padding-top", `0px`, "important");
       }
     });
 
@@ -373,7 +377,6 @@ class PubPeer {
     //     el.parentNode.insertBefore(newEl, el);
     //   }
     // });
-
   }
 
   addTopBar() {
@@ -393,7 +396,7 @@ class PubPeer {
         width: 100%;
         margin: 0;
         opacity: 100%;
-        z-index: 9999;
+        z-index: 2147483647;
         background-color: ${bgColor};
         text-align: center !important;
         padding: 5px 8px;
@@ -488,8 +491,10 @@ class PubPeer {
       }
     } else {
       hrefText =
-        total_comments == 1 ? `1 comment` : `${total_comments} comments`;
-      hrefText += ` on PubPeer (by: ${publication.users})`;
+        total_comments == 1
+          ? `1 comment on Pubpeer`
+          : `${total_comments} comments on Pubpeer`;
+      // hrefText += ` on PubPeer (by: ${publication.users})`;
     }
     let linkToComments = publication.url + this.utm;
     let unsortedDoiElements = this.contains(snippetsSelector, publication.id);
